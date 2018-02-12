@@ -25,6 +25,7 @@ export class ChannelComponent implements OnInit {
             }
             let tweet = Tweet.create(data);
             this.tweets.unshift(tweet);
+            console.log(JSON.stringify(tweet));
         });
 
         this._hubConnetion.start()

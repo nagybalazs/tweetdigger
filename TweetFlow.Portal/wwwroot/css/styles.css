@@ -164,7 +164,8 @@
     .new_tweets h2, .change h2 {
         margin-bottom: 0;
         font-size: 12px;
-        font-weight: 100;
+        font-weight: 400;
+        margin-top: 2px;
     }
 
     .new_tweets p, .change p {
@@ -185,9 +186,9 @@
     }
 
 .up h2 {
-    color: #579711;
+    color: #5e9422;
 }
 
 .down h2 {
-    color: #D0021B;
+    color: #cc3446;
 }
