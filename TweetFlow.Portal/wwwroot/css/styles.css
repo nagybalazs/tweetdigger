@@ -87,6 +87,7 @@ h2 {
     background: red;
     display: inline;
     overflow-y: scroll;
+    overflow-x: hidden;
     background-color: #fbfbfb;
     border: 1px solid #D8E2E8;
     border-left: 0;
