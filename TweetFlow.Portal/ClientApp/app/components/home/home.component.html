@@ -1,0 +1,25 @@
+﻿<div class="header">
+    <img class="logo" src="../../assets/logo.png" />
+</div>
+
+<div class="titleholder">
+    <div *ngFor="let channel of channels" class="title">
+        <p class="name">{{channel.name}}</p>
+        <div class="metrics">
+            <div class="new_tweets up">
+                <h2>1.43%</h2>
+                <p>Tw.24H</p>
+            </div>
+            <div class="change down">
+                <h2>24.33%</h2>
+                <p>Chg.24H</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="feedholder">
+    <div *ngFor="let channel of channels" class="feed">
+        <channel [endpoint]="channel.endpoint"></channel>
+    </div>
+</div>

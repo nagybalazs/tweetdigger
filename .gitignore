@@ -1,0 +1,10 @@
+/TweetFlow.Job/obj
+/TweetFlow.Job/bin
+/TweetFlow.MemoryStore/bin
+/TweetFlow.MemoryStore/obj
+/TweetFlow.Model/obj
+/TweetFlow.Model/bin
+/TweetFlow.Stream/bin
+/TweetFlow.Stream/obj
+/TweetFlow.StreamService/bin
+/TweetFlow.StreamService/obj

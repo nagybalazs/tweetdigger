@@ -1,0 +1,24 @@
+﻿{{tweet.user.name}}
+<div class="tweeet_title">
+    <img [src]="tweet.user.profileImageUrl400x400" />
+    <h2 class="name">{{tweet.user.name}}</h2>
+    <p class="username">{{tweet.user.screenName}}</p>
+    <p class="time">{{minutes}}</p>
+</div>
+<div class="tweet_content">
+    {{tweet.fullText}}
+</div>
+<div class="tweet_details">
+    <div class="retweet">
+        <img src="../../assets/retweet_icon.png" />
+        <h2>{{tweet.retweetCount}}</h2>
+    </div>
+    <div class="comment">
+        <img src="../../assets/comment_icon.png" />
+        <h2>{{tweet.replyCount}}</h2>
+    </div>
+    <div class="comment">
+        <img src="../../assets/heart.png" />
+        <h2>{{tweet.favoriteCount}}</h2>
+    </div>
+</div>
