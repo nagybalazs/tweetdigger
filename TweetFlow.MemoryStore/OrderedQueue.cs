@@ -51,7 +51,7 @@ namespace TweetFlow.MemoryStore
         private void OutScoreMinimumScoredItem(ScoredItem newItem)
         {
             var minimumScoredItem = this.GetMinimumScoredItem();
-            if(newItem.Score > minimumScoredItem.Score)
+            if(minimumScoredItem.Content.Type == newItem.Content.Type && newItem.Score > minimumScoredItem.Score)
             {
                 this.items.Remove(minimumScoredItem);
                 this.items.Add(newItem);
@@ -75,7 +75,7 @@ namespace TweetFlow.MemoryStore
 
         public void Add(ScoredItem item)
         {
-            var alreadyAdded = this.items.FirstOrDefault(p => p.Content.StrId == item.Content.StrId);
+            var alreadyAdded = this.items.FirstOrDefault(p => p.Content.StrId == item.Content.StrId && p.Content.Type == item.Content.Type);
             if (alreadyAdded != null)
             {
                 return;

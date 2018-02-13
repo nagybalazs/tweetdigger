@@ -16,25 +16,10 @@ namespace TweetFlow.StreamService
 
         public SampleStream Bitcoin()
         {
-            return this.CreateTrackedStream("#bitcoin");
+            return this.CreateTrackedStream("#bitcoin", "#ripple", "#litecoin", "#ethereum");
         }
 
-        public SampleStream Ethereum()
-        {
-            return this.CreateTrackedStream("#ethereum");
-        }
-
-        public SampleStream Ripple()
-        {
-            return this.CreateTrackedStream("#ripple");
-        }
-
-        public SampleStream Lite()
-        {
-            return this.CreateTrackedStream("#litecoin");
-        }
-
-        private SampleStream CreateTrackedStream(string track)
+        private SampleStream CreateTrackedStream(params string[] track)
         {
             this.Running = true;
 
@@ -42,7 +27,7 @@ namespace TweetFlow.StreamService
 
             var ct = new SampleStream(credentials, oq)
                 .AddLanguage(Language.English)
-                .AddTrack(track)
+                .AddTracks(track)
                 .AddQueryParameter("result_type", "recent");
 
             return ct;

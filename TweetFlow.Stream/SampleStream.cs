@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using TweetFlow.MemoryStore;
+using TweetFlow.Model;
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Streaming;
@@ -86,6 +89,31 @@ namespace TweetFlow.Stream
                     return;
                 }
 
+                foreach(var hashtag in args.Tweet.Hashtags)
+                {
+                    var htlc = hashtag.Text.ToLower().Replace("#", string.Empty);
+                    if(htlc == "bitcoin")
+                    {
+                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Bitcoin)));
+                    }
+
+                    if(htlc == "ethereum")
+                    {
+                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Ethereum)));
+                    }
+
+                    if(htlc == "ripple")
+                    {
+                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Ripple)));
+                    }
+
+                    if(htlc == "litecoin")
+                    {
+                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.LiteCoin)));
+                    }
+
+                }
+
                 var tweet = new Model.Tweet
                 {
                     StrId = args.Tweet.IdStr,
@@ -116,6 +144,37 @@ namespace TweetFlow.Stream
             };
             await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             return this;
+        }
+
+        private Model.Tweet CreateTweet(ITweet iTweet, TweetType type)
+        {
+            var tweet = new Model.Tweet
+            {
+                Type = type,
+                StrId = iTweet.IdStr,
+                FullText = iTweet.FullText,
+                CreatedAt = iTweet.CreatedAt,
+                FavoriteCount = iTweet.FavoriteCount,
+                Favorited = iTweet.Favorited,
+                QuoteCount = 0,
+                ReplyCount = 0,
+                RetweetCount = iTweet.RetweetCount,
+                IsRetweet = iTweet.IsRetweet,
+                User = new Model.User
+                {
+                    CreatedAt = iTweet.CreatedBy.CreatedAt,
+                    FavouritesCount = iTweet.CreatedBy.FavouritesCount,
+                    FollowersCount = iTweet.CreatedBy.FollowersCount,
+                    FriendsCount = iTweet.CreatedBy.FriendsCount,
+                    ListedCount = iTweet.CreatedBy.ListedCount,
+                    StatusesCount = iTweet.CreatedBy.StatusesCount,
+                    Verified = iTweet.CreatedBy.Verified,
+                    ProfileImageUrl400x400 = iTweet.CreatedBy.ProfileImageUrl400x400,
+                    ScreenName = iTweet.CreatedBy.ScreenName,
+                    Name = iTweet.CreatedBy.Name
+                }
+            };
+            return tweet;
         }
     }
 }
