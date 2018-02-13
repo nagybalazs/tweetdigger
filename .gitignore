@@ -8,3 +8,6 @@
 /TweetFlow.Stream/obj
 /TweetFlow.StreamService/bin
 /TweetFlow.StreamService/obj
+/.vs
+/TweetFlow.Portal/.vscode/tasks.json
+/TweetFlow.Portal/.vscode/launch.json
