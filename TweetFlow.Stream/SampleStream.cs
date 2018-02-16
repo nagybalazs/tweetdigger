@@ -139,8 +139,6 @@ namespace TweetFlow.Stream
                         Name = args.Tweet.CreatedBy.Name
                     }
                 };
-
-                this.Queue.Add(new ScoredItem(tweet));
             };
             await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             return this;
