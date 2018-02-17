@@ -1,10 +1,12 @@
-﻿namespace TweetFlow.Model
+﻿using System;
+
+namespace TweetFlow.Model
 {
     public enum TweetType
     {
-        Bitcoin,
-        Ethereum,
-        Ripple,
-        LiteCoin
+        Bitcoin = 0,
+        Ethereum = 1,
+        Ripple = 2,
+        LiteCoin = 4
     }
 }

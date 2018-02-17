@@ -1,5 +1,4 @@
 ﻿using TweetFlow.MemoryStore;
-using TweetFlow.Model;
 using TweetFlow.Stream;
 
 namespace TweetFlow.StreamService

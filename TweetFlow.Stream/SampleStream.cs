@@ -19,6 +19,8 @@ namespace TweetFlow.Stream
 
         public SampleStream(ICredentials credentials, OrderedQueue orderedQueue)
         {
+            TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
+            TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             Auth.SetCredentials(new Tweetinvi.Models.TwitterCredentials(credentials.ConsumerKey, credentials.ConsumerSecret, credentials.AccessToken, credentials.AccessTokenSecret));
             this.Queue = orderedQueue;
             this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
@@ -84,64 +86,37 @@ namespace TweetFlow.Stream
             this.IsRunning = true;
             this.filteredStream.MatchingTweetReceived += (sender, args) =>
             {
-                if (args.Tweet.IsRetweet)
-                {
-                    return;
-                }
-
-                foreach(var hashtag in args.Tweet.Hashtags)
-                {
-                    var htlc = hashtag.Text.ToLower().Replace("#", string.Empty);
-                    if(htlc == "bitcoin")
-                    {
-                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Bitcoin)));
-                    }
-
-                    if(htlc == "ethereum")
-                    {
-                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Ethereum)));
-                    }
-
-                    if(htlc == "ripple")
-                    {
-                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.Ripple)));
-                    }
-
-                    if(htlc == "litecoin")
-                    {
-                        this.Queue.Add(new ScoredItem(this.CreateTweet(args.Tweet, TweetType.LiteCoin)));
-                    }
-
-                }
-
-                var tweet = new Model.Tweet
-                {
-                    StrId = args.Tweet.IdStr,
-                    FullText = args.Tweet.FullText,
-                    CreatedAt = args.Tweet.CreatedAt,
-                    FavoriteCount = args.Tweet.FavoriteCount,
-                    Favorited = args.Tweet.Favorited,
-                    QuoteCount = 0,
-                    ReplyCount = 0,
-                    RetweetCount = args.Tweet.RetweetCount,
-                    IsRetweet = args.Tweet.IsRetweet,
-                    User = new Model.User
-                    {
-                        CreatedAt = args.Tweet.CreatedBy.CreatedAt,
-                        FavouritesCount = args.Tweet.CreatedBy.FavouritesCount,
-                        FollowersCount = args.Tweet.CreatedBy.FollowersCount,
-                        FriendsCount = args.Tweet.CreatedBy.FriendsCount,
-                        ListedCount = args.Tweet.CreatedBy.ListedCount,
-                        StatusesCount = args.Tweet.CreatedBy.StatusesCount,
-                        Verified = args.Tweet.CreatedBy.Verified,
-                        ProfileImageUrl400x400 = args.Tweet.CreatedBy.ProfileImageUrl400x400,
-                        ScreenName = args.Tweet.CreatedBy.ScreenName,
-                        Name = args.Tweet.CreatedBy.Name
-                    }
-                };
+                this.FilterAndAddTweetToQueue(args.Tweet);
             };
             await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             return this;
+        }
+
+        private void FilterAndAddTweetToQueue(ITweet tweet)
+        {
+            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text);
+            foreach (var hashtag in hashtags)
+            {
+                if (hashtag.IsMatchToType(TweetType.Bitcoin))
+                {
+                    this.Queue.Add(new ScoredItem(this.CreateTweet(tweet, TweetType.Bitcoin)));
+                }
+
+                if (hashtag.IsMatchToType(TweetType.Ethereum))
+                {
+                    this.Queue.Add(new ScoredItem(this.CreateTweet(tweet, TweetType.Ethereum)));
+                }
+
+                if (hashtag.IsMatchToType(TweetType.Ripple))
+                {
+                    this.Queue.Add(new ScoredItem(this.CreateTweet(tweet, TweetType.Ripple)));
+                }
+
+                if (hashtag.IsMatchToType(TweetType.LiteCoin))
+                {
+                    this.Queue.Add(new ScoredItem(this.CreateTweet(tweet, TweetType.LiteCoin)));
+                }
+            }
         }
 
         private Model.Tweet CreateTweet(ITweet iTweet, TweetType type)
