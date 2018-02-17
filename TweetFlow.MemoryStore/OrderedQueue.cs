@@ -59,9 +59,6 @@ namespace TweetFlow.MemoryStore
 
         private void OutScoreMinimumScoredItem(ScoredItem newItem)
         {
-            Debug.WriteLine(Environment.NewLine);
-            Debug.WriteLine(Environment.NewLine);
-            Debug.WriteLine($"=======================COUNT: {this.items.Count}============================");
             var minimumScoredItem = this.GetMinimumScoredItem(newItem.Content.Type);
             if(minimumScoredItem == null || newItem.Score > minimumScoredItem.Score)
             {
@@ -70,7 +67,6 @@ namespace TweetFlow.MemoryStore
                     this.items.Remove(minimumScoredItem);
                 }
                 this.items.Add(newItem);
-                Debug.WriteLine($"Added: {newItem.Score.ToString()} (Text: {newItem.Content.FullText}");
                 if (this.InReadyState)
                 {
                     var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
@@ -78,7 +74,6 @@ namespace TweetFlow.MemoryStore
                     {
                         return;
                     }
-                    Debug.WriteLine($"Sent: {maximumScoredItem.Score.ToString()} (Text: {maximumScoredItem.Content.FullText}");
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
             }
