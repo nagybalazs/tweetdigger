@@ -133,6 +133,7 @@ namespace TweetFlow.Stream
                 ReplyCount = 0,
                 RetweetCount = iTweet.RetweetCount,
                 IsRetweet = iTweet.IsRetweet,
+                Hashtags = iTweet.Hashtags.Select(hashtag => hashtag.Text).ToList(),
                 User = new Model.User
                 {
                     CreatedAt = iTweet.CreatedBy.CreatedAt,

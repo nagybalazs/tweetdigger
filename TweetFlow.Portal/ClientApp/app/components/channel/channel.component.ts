@@ -21,7 +21,7 @@ export class ChannelComponent implements OnInit {
 
         this._hubConnetion.on('Send', (data: any) => {
             if (this.tweets.length >= 100) {
-                this.tweets.shift();
+                this.tweets.splice(-1, 1);
             }
             let tweet = Tweet.create(data);
             this.tweets.unshift(tweet);

@@ -1,4 +1,6 @@
-﻿using TweetFlow.Model;
+﻿using System.Collections.Generic;
+using System.Linq;
+using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
@@ -24,6 +26,20 @@ namespace TweetFlow.MemoryStore
                 (this.Content.User.FriendsCount * 4) +
                 (this.Content.User.ListedCount * 2) +
                 (this.Content.User.StatusesCount * 4);
+
+            if(this.Content.Hashtags.Count > 7)
+            {
+                score = 0;
+            }
+
+            var trimmed = this.Content.FullText.Replace(" ", string.Empty);
+
+            // TODO: finomítani, mert így szar
+            var unallowedTags = new List<string> { "signup", "token", "project", "sale", "free", "grab your", "win", "join", "grab your", "easy money" };
+            if(unallowedTags.Any(w => this.Content.FullText.ToLower().Contains(w)))
+            {
+                score = 0;
+            }
 
             if (this.Content.User.Verified)
             {
