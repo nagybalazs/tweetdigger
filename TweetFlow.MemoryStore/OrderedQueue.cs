@@ -77,10 +77,6 @@ namespace TweetFlow.MemoryStore
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
             }
-            else
-            {
-                Debug.WriteLine($"Not added: {newItem.Score.ToString()} (Text: {newItem.Content.FullText}");
-            }
         }
 
         public void Add(ScoredItem item)
