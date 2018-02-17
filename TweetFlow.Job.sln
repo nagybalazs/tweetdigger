@@ -13,6 +13,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Model", "TweetFlo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Portal", "TweetFlow.Portal\TweetFlow.Portal.csproj", "{E9D834F9-3889-4BC3-888D-220D7EACAF11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.DatabaseModel", "TweetFlow.DatabaseModel\TweetFlow.DatabaseModel.csproj", "{4FB6C608-FD69-407E-85CE-66D1FFD878BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.EF", "TweetFlow.EF\TweetFlow.EF.csproj", "{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.Providers", "TweetFlow.Providers\TweetFlow.Providers.csproj", "{39CA9090-0426-4721-8719-70481E22EA00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.Services", "TweetFlow.Services\TweetFlow.Services.csproj", "{F40B6C82-6730-4C2C-8225-32F1750E4F53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +47,22 @@ Global
 		{E9D834F9-3889-4BC3-888D-220D7EACAF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9D834F9-3889-4BC3-888D-220D7EACAF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9D834F9-3889-4BC3-888D-220D7EACAF11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB6C608-FD69-407E-85CE-66D1FFD878BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB6C608-FD69-407E-85CE-66D1FFD878BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB6C608-FD69-407E-85CE-66D1FFD878BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB6C608-FD69-407E-85CE-66D1FFD878BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39CA9090-0426-4721-8719-70481E22EA00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39CA9090-0426-4721-8719-70481E22EA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39CA9090-0426-4721-8719-70481E22EA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39CA9090-0426-4721-8719-70481E22EA00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F40B6C82-6730-4C2C-8225-32F1750E4F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F40B6C82-6730-4C2C-8225-32F1750E4F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F40B6C82-6730-4C2C-8225-32F1750E4F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F40B6C82-6730-4C2C-8225-32F1750E4F53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

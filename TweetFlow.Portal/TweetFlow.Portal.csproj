@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TweetFlow.EF\TweetFlow.EF.csproj" />
     <ProjectReference Include="..\TweetFlow.StreamService\TweetFlow.StreamService.csproj" />
     <ProjectReference Include="..\TweetFlow.Stream\TweetFlow.Stream.csproj" />
   </ItemGroup>

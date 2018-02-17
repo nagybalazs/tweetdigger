@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TweetFlow.EF;
 using TweetFlow.MemoryStore;
 using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
@@ -47,7 +49,8 @@ namespace TweetFlow.Portal
                 .AddSingleton<StreamFactory>()
                 .AddTransient<Subscriber>()
                 .AddTransient<SampleStream>()
-                .AddTransient<OrderedQueue>();
+                .AddTransient<OrderedQueue>()
+                .AddDbContext<TweetFlowContext>(opt => opt.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TweetFlow;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
             services.AddMvc();
 

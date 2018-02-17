@@ -6,6 +6,7 @@ namespace TweetFlow.MemoryStore
 {
     public class ScoredItem : IOrderedItem<int, Tweet>
     {
+        private IScoredCalculator<Tweet> calculator;
         public ScoredItem(Tweet content)
         {
             this.Content = content;
@@ -14,6 +15,12 @@ namespace TweetFlow.MemoryStore
 
         public int Score { get; set; }
         public Tweet Content { get; set; }
+
+        public IOrderedItem<int, Tweet> SetCustomScoreCalculator(IScoredCalculator<Tweet> calculator)
+        {
+            this.calculator = calculator;
+            return this;
+        }
 
         private int CalculateScore()
         {
@@ -46,6 +53,11 @@ namespace TweetFlow.MemoryStore
             if (this.Content.User.Verified)
             {
                 score = score * 2;
+            }
+
+            if (this.calculator != null)
+            {
+                calculator.CalculateScore(this.Content);
             }
 
             return score;
