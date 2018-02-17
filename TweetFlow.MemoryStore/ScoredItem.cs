@@ -21,11 +21,13 @@ namespace TweetFlow.MemoryStore
                 (this.Content.RetweetCount * 5) +
                 (this.Content.FavoriteCount * 5) +
                 (this.Content.ReplyCount * 5) +
-                (this.Content.User.FollowersCount * 10) +
-                (this.Content.User.FavouritesCount * 2) +
-                (this.Content.User.FriendsCount * 4) +
-                (this.Content.User.ListedCount * 2) +
-                (this.Content.User.StatusesCount * 4);
+                (this.Content.User.FollowersCount * 5) +
+                (this.Content.User.FriendsCount * 5) +
+                (this.Content.User.ListedCount * 5) +
+                (
+                    (this.Content.User.FavouritesCount) /
+                    (this.Content.User.StatusesCount) * 10  
+                );
 
             if(this.Content.Hashtags.Count > 7)
             {
