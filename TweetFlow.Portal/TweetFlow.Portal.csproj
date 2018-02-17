@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TweetFlow.EF\TweetFlow.EF.csproj" />
+    <ProjectReference Include="..\TweetFlow.Providers\TweetFlow.Providers.csproj" />
+    <ProjectReference Include="..\TweetFlow.Services\TweetFlow.Services.csproj" />
     <ProjectReference Include="..\TweetFlow.StreamService\TweetFlow.StreamService.csproj" />
     <ProjectReference Include="..\TweetFlow.Stream\TweetFlow.Stream.csproj" />
   </ItemGroup>
@@ -79,8 +82,8 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec Command="npm install" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js" />
+    <Exec Command="node node_modules/webpack/bin/webpack.js" />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>

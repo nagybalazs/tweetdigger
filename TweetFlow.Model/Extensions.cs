@@ -9,14 +9,14 @@ namespace TweetFlow.Model
             return Enum.GetName(typeof(TweetType), tweetType).ToLower();
         }
 
-        public static string RemoveHashtag(this string str)
+        public static string LowerAndRemoveHashtag(this string str)
         {
-            return str.Replace("#", string.Empty);
+            return str.Replace("#", string.Empty).ToLower();
         }
 
         public static bool IsMatchToType(this string str, TweetType tweetType)
         {
-            return str.RemoveHashtag() == AsLoweredString(tweetType);
+            return str.LowerAndRemoveHashtag() == AsLoweredString(tweetType);
         }
     }
 }

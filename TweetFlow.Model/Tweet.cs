@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TweetFlow.Model
 {
@@ -37,5 +38,6 @@ namespace TweetFlow.Model
         public bool IsRetweet { get; set; }
 
         public User User { get; set; }
+        public ICollection<string> Hashtags { get; set; }
     }
 }

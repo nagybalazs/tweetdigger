@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using MoreLinq;
+﻿using MoreLinq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
     public class OrderedQueue : IOrderedQueue<int, Tweet, ScoredItem>
     {
-        private const int defaultReadyWhenCountReached = 100;
+        private const int defaultReadyWhenCountReached = 50;
 
         private IList<ScoredItem> items;
         private int readyWhenCountReached;
@@ -86,7 +83,7 @@ namespace TweetFlow.MemoryStore
             {
                 return;
             }
-            if (this.items.Count == this.readyWhenCountReached)
+            if (this.InReadyState || (this.items.Count == this.readyWhenCountReached))
             {
                 this.InReadyState = true;
                 this.OutScoreMinimumScoredItem(item);

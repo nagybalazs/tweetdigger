@@ -1,5 +1,7 @@
 ﻿using TweetFlow.MemoryStore;
 using TweetFlow.Stream;
+using TweetFlow.Services;
+using TweetFlow.Model;
 
 namespace TweetFlow.StreamService
 {
@@ -7,10 +9,12 @@ namespace TweetFlow.StreamService
     {
         public bool Running { get; set; }
         private ICredentials credentials;
+        private IScoredCalculator<int, Tweet> tweetScoreCalculator;
         
-        public StreamFactory(ICredentials credentials)
+        public StreamFactory(ICredentials credentials, IScoredCalculator<int, Tweet> tweetScoreCalculator)
         {
             this.credentials = credentials;
+            this.tweetScoreCalculator = tweetScoreCalculator;
         }
 
         public SampleStream Bitcoin()
@@ -24,7 +28,7 @@ namespace TweetFlow.StreamService
 
             var oq = new OrderedQueue();
 
-            var ct = new SampleStream(credentials, oq)
+            var ct = new SampleStream(credentials, oq, tweetScoreCalculator)
                 .AddLanguage(Language.English)
                 .AddTracks(track)
                 .AddQueryParameter("result_type", "recent");

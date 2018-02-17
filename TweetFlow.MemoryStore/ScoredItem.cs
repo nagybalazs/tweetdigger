@@ -1,38 +1,32 @@
-﻿using TweetFlow.Model;
+﻿using System;
+using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
     public class ScoredItem : IOrderedItem<int, Tweet>
     {
+        private IScoredCalculator<int, Tweet> calculator;
         public ScoredItem(Tweet content)
         {
             this.Content = content;
-            this.Score = this.CalculateScore();
         }
 
         public int Score { get; set; }
         public Tweet Content { get; set; }
 
-        private int CalculateScore()
+        public int CalculateScore()
         {
-            var score =
-                (this.Content.RetweetCount ) +
-                (this.Content.FavoriteCount ) +
-                (this.Content.ReplyCount ) +
-                (this.Content.User.FollowersCount ) +
-                (this.Content.User.FriendsCount ) +
-                (this.Content.User.ListedCount ) +
-                (
-                    (this.Content.User.FavouritesCount) /
-                    (this.Content.User.StatusesCount) 
-                );
-
-            if (this.Content.User.Verified)
+            if(this.calculator == null)
             {
-                score = score * 2;
+                throw new ArgumentNullException("CustomScoreCalculator cannot be null. Set it with SetCustomScoreCalculator method.");
             }
+            this.Score = this.calculator.CalculateScore(this.Content);
+            return this.Score;
+        }
 
-            return score;
+        public void SetCustomScoreCalculator(IScoredCalculator<int, Tweet> calculator)
+        {
+            this.calculator = calculator;
         }
     }
 }
