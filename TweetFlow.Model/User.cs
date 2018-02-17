@@ -35,5 +35,6 @@ namespace TweetFlow.Model
         public string ProfileImageUrl400x400 { get; set; }
         public string Name { get; set; }
         public string ScreenName { get; set; }
+        public long Id { get; set; }
     }
 }

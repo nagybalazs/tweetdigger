@@ -4,6 +4,7 @@
     {
         TScore Score { get; set; }
         TContent Content { get; set; }
-        IOrderedItem<TScore, TContent> SetCustomScoreCalculator(IScoredCalculator<TContent> calculator);
+        void SetCustomScoreCalculator(IScoredCalculator<TScore, TContent> calculator);
+        TScore CalculateScore();
     }
 }

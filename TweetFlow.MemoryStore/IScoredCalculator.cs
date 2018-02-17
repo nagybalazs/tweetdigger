@@ -1,7 +1,7 @@
 ﻿namespace TweetFlow.MemoryStore
 {
-    public interface IScoredCalculator<TContent>
+    public interface IScoredCalculator<TScore, TContent>
     {
-        void CalculateScore(TContent orderedItem);
+        TScore CalculateScore(TContent orderedItem);
     }
 }

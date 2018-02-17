@@ -15,6 +15,8 @@ using TweetFlow.MemoryStore;
 using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Portal.Controllers;
+using TweetFlow.Providers;
+using TweetFlow.Services;
 using TweetFlow.Stream;
 using TweetFlow.StreamService;
 
@@ -46,11 +48,12 @@ namespace TweetFlow.Portal
                 .AddOptions()
                 .AddTransient<ICredentials>(p => credentials)
                 .AddTransient<IOrderedQueue<int, Tweet, ScoredItem>, OrderedQueue>()
-                .AddSingleton<StreamFactory>()
+                .AddTransient<IScoredCalculator<int, Tweet>, TweetScoreCalculator>()
+                .AddTransient<StreamFactory>()
                 .AddTransient<Subscriber>()
                 .AddTransient<SampleStream>()
                 .AddTransient<OrderedQueue>()
-                .AddDbContext<TweetFlowContext>(opt => opt.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TweetFlow;Trusted_Connection=True;MultipleActiveResultSets=true"));
+                .AddTransient<TWUserProvider>();
 
             services.AddMvc();
 

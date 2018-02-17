@@ -83,7 +83,7 @@ namespace TweetFlow.MemoryStore
             {
                 return;
             }
-            if (this.items.Count == this.readyWhenCountReached)
+            if (this.InReadyState || (this.items.Count == this.readyWhenCountReached))
             {
                 this.InReadyState = true;
                 this.OutScoreMinimumScoredItem(item);
