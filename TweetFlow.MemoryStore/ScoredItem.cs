@@ -16,15 +16,15 @@ namespace TweetFlow.MemoryStore
         private int CalculateScore()
         {
             var score =
-                (this.Content.RetweetCount * 5) +
-                (this.Content.FavoriteCount * 5) +
-                (this.Content.ReplyCount * 5) +
-                (this.Content.User.FollowersCount * 5) +
-                (this.Content.User.FriendsCount * 5) +
-                (this.Content.User.ListedCount * 5) +
+                (this.Content.RetweetCount ) +
+                (this.Content.FavoriteCount ) +
+                (this.Content.ReplyCount ) +
+                (this.Content.User.FollowersCount ) +
+                (this.Content.User.FriendsCount ) +
+                (this.Content.User.ListedCount ) +
                 (
                     (this.Content.User.FavouritesCount) /
-                    (this.Content.User.StatusesCount) * 10  
+                    (this.Content.User.StatusesCount) 
                 );
 
             if (this.Content.User.Verified)
