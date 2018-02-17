@@ -9,8 +9,6 @@ namespace TweetFlow.MemoryStore
         bool InReadyState { get; }
         IOrderedQueue<TScore, TItemContent, TItem> SetReadyWhenCountReached(int readyWhenCountReached);
         void Add(TItem item);
-        Task AddAsync(TItem item);
         void Remove(TItem item);
-        TItem Get();
     }
 }

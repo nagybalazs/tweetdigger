@@ -1,5 +1,4 @@
-﻿using System;
-using TweetFlow.Model;
+﻿using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {

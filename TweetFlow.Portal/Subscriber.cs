@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading;
 using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Stream;
@@ -10,61 +11,62 @@ namespace TweetFlow.Portal
     {
         private StreamFactory streamFactory;
         private IHubContext<BitCoinHub> bitCoinHubContext;
-        private IHubContext<EthereumHub> ethereumHubContext;
-        private IHubContext<RippleHub> rippleHubContext;
-        private IHubContext<LiteCoinHub> liteCoinHubContext;
+        private IHubContext<RippleHub> rippleHub;
+        private IHubContext<EthereumHub> ethereumHub;
+        private IHubContext<LiteCoinHub> liteCoinHub;
 
         public Subscriber(
             StreamFactory streamFactory, 
-            IHubContext<BitCoinHub> bitCoinHubContext, 
-            IHubContext<EthereumHub> ethereumHubContext,
-            IHubContext<RippleHub> rippleHubContext,
-            IHubContext<LiteCoinHub> liteCoinHubContext)
+            IHubContext<BitCoinHub> bitCoinHubContext,
+            IHubContext<RippleHub> rippleHub,
+            IHubContext<EthereumHub> ethereumHub,
+            IHubContext<LiteCoinHub> liteCoinHub)
         {
             this.streamFactory = streamFactory;
             this.bitCoinHubContext = bitCoinHubContext;
-            this.ethereumHubContext = ethereumHubContext;
-            this.liteCoinHubContext = liteCoinHubContext;
-            this.rippleHubContext = rippleHubContext;
+            this.rippleHub = rippleHub;
+            this.ethereumHub = ethereumHub;
+            this.liteCoinHub = liteCoinHub;
         }
 
         public void Bootstrap()
         {
             if (!this.streamFactory.Running)
             {
-                this.StartStream(this.streamFactory.Bitcoin(), this.bitCoinHubContext);
-                this.StartStream(this.streamFactory.Ethereum(), this.ethereumHubContext);
-                //this.StartStream(this.streamFactory.Ripple(), this.rippleHubContext);
-                //this.StartStream(this.streamFactory.Lite(), this.liteCoinHubContext);
+                var stream = this.streamFactory.Bitcoin();
+                stream.Queue.ContentAdded += (sender, tweet) =>
+                {
+                    switch (tweet.Type)
+                    {
+                        case TweetType.Bitcoin:
+                            {
+                                this.InvokeSend(this.bitCoinHubContext, tweet);
+                                break;
+                            }
+                        case TweetType.Ethereum:
+                            {
+                                this.InvokeSend(this.ethereumHub, tweet);
+                                break;
+                            }
+                        case TweetType.LiteCoin:
+                            {
+                                this.InvokeSend(this.liteCoinHub, tweet);
+                                break;
+                            }
+                        case TweetType.Ripple:
+                            {
+                                this.InvokeSend(this.rippleHub, tweet);
+                                break;
+                            }
+                    }
+                };
+                stream.StartAsync();
             }
-                //var coinStream = this.streamFactory.Bitcoin();
-                //coinStream.Queue.ContentAdded += (a, b) =>
-                //{
-                //    bitCoinHubContext.Clients.All.InvokeAsync("send", b);
-                //};
-                //coinStream.StartAsync();
-
-                //var ethereumStream = this.streamFactory.Ethereum();
-                //ethereumStream.Queue.ContentAdded += (a, b) =>
-                //{
-                //    ethereumHubContext.Clients.All.InvokeAsync("send", b);
-                //};
-                //ethereumStream.StartAsync();
-
-                //var liteCoinStream = this.streamFactory.Lite();
-                //liteCoinStream.Queue.ContentAdded += (a, b) =>
-                //{
-                //    liteCoinHubContext.Clients.All.InvokeAsync("send", b);
-                //};
         }
 
-        private void StartStream<THub>(SampleStream stream, IHubContext<THub> hubContext) where THub : Hub
+        private void InvokeSend<THub>(IHubContext<THub> hubContext, Tweet tweet) where THub : Hub
         {
-            stream.Queue.ContentAdded += (a, b) =>
-            {
-                hubContext.Clients.All.InvokeAsync("send", b);
-            };
-            stream.StartAsync();
+            hubContext.Clients.All.InvokeAsync("send", tweet);
         }
 
     }

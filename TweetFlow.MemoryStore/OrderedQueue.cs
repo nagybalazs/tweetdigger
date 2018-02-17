@@ -2,6 +2,7 @@
 using MoreLinq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using TweetFlow.Model;
@@ -10,7 +11,7 @@ namespace TweetFlow.MemoryStore
 {
     public class OrderedQueue : IOrderedQueue<int, Tweet, ScoredItem>
     {
-        private const int defaultReadyWhenCountReached = 10;
+        private const int defaultReadyWhenCountReached = 100;
 
         private IList<ScoredItem> items;
         private int readyWhenCountReached;
@@ -25,57 +26,62 @@ namespace TweetFlow.MemoryStore
             this.items = new List<ScoredItem>();
         }
 
-        private ScoredItem GetMinimumScoredItem()
+        private ScoredItem GetMinimumScoredItem(TweetType tweetType)
         {
-            return this.items.MinBy(item => item.Score);
+            var itemsWithSameType = items.Where(item => item.Content.Type == tweetType);
+            if(itemsWithSameType.Count() < 1)
+            {
+                return null;
+            }
+            return itemsWithSameType.MinBy(item => item.Score);
         }
 
-        private ScoredItem GetMaximumScoredItem()
+        private ScoredItem GetMaximumScoredItem(TweetType type)
         {
+            var itemsWithSameType = items.Where(item => item.Content.Type == type);
+            if(itemsWithSameType.Count() < 1)
+            {
+                return null;
+            }
             return this.items.MaxBy(item => item.Score);
         }
 
-        private ScoredItem RemoveMinimumScoredItem()
+        private ScoredItem RemoveMaximumScoredItem(TweetType type)
         {
-            var minimumScoredItem = this.GetMinimumScoredItem();
-            this.Remove(minimumScoredItem);
-            return minimumScoredItem;
-        }
-        private ScoredItem RemoveMaximumScoredItem()
-        {
-            var maximumScoredItem = this.GetMaximumScoredItem();
+            var maximumScoredItem = this.GetMaximumScoredItem(type);
+            if(maximumScoredItem == null)
+            {
+                return null;
+            }
             this.Remove(maximumScoredItem);
             return maximumScoredItem;
         }
 
         private void OutScoreMinimumScoredItem(ScoredItem newItem)
         {
-            var minimumScoredItem = this.GetMinimumScoredItem();
-            if(newItem.Score > minimumScoredItem.Score)
+            var minimumScoredItem = this.GetMinimumScoredItem(newItem.Content.Type);
+            if(minimumScoredItem == null || newItem.Score > minimumScoredItem.Score)
             {
-                this.items.Remove(minimumScoredItem);
+                if (minimumScoredItem != null)
+                {
+                    this.items.Remove(minimumScoredItem);
+                }
                 this.items.Add(newItem);
-                var maximumScoredItem = this.GetMaximumScoredItem();
                 if (this.InReadyState)
                 {
-                    this.RemoveMaximumScoredItem();
+                    var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
+                    if(maximumScoredItem == null)
+                    {
+                        return;
+                    }
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
             }
         }
-        public ScoredItem Get()
-        {
-            return this.RemoveMaximumScoredItem();
-        }
-
-        public async Task AddAsync(ScoredItem item)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Add(ScoredItem item)
         {
-            var alreadyAdded = this.items.FirstOrDefault(p => p.Content.StrId == item.Content.StrId);
+            var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.Type);
             if (alreadyAdded != null)
             {
                 return;
@@ -88,7 +94,13 @@ namespace TweetFlow.MemoryStore
             else
             {
                 this.items.Add(item);
+                this.ContentAdded?.Invoke(null, item.Content);
             }
+        }
+
+        private ScoredItem GetItemByStrIdAndType(string strId, TweetType type)
+        {
+            return this.items.FirstOrDefault(item => item.Content.StrId == strId && item.Content.Type == type);
         }
 
         public void Remove(ScoredItem item)

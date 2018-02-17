@@ -56,9 +56,10 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var k = app.ApplicationServices;
-            var pls = k.GetService<Subscriber>();
-            pls.Bootstrap();
+            app.ApplicationServices
+                .GetService<Subscriber>()
+                .Bootstrap();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,8 +77,8 @@ namespace TweetFlow.Portal
             {
                 routes.MapHub<BitCoinHub>("bitcoin");
                 routes.MapHub<EthereumHub>("ethereum");
-                routes.MapHub<RippleHub>("ripple");
                 routes.MapHub<LiteCoinHub>("litecoin");
+                routes.MapHub<RippleHub>("ripple");
             });
 
             app.UseStaticFiles();

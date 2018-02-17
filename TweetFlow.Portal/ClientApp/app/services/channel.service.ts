@@ -7,7 +7,9 @@ export class ChannelService {
     public static getChannels(): Channel[] {
         return [
             { endpoint: 'bitcoin', name: '#bitcoin' },
-            { endpoint: 'ethereum', name: '#ethereum' }
+            { endpoint: 'ethereum', name: '#ethereum' },
+            { endpoint: 'ripple', name: '#ripple' },
+            { endpoint: 'litecoin', name: '#litecoin' }
         ];
     }
 
