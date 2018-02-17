@@ -22,3 +22,7 @@
 /TweetFlow.Providers/obj
 /TweetFlow.Services/bin/Debug
 /TweetFlow.Services/obj
+/TweetFlow.DatabaseModel/bin/Release/netstandard2.0
+/TweetFlow.EF/bin/Release/netstandard2.0
+/TweetFlow.Providers/bin/Release/netstandard2.0
+/TweetFlow.Services/bin/Release/netcoreapp2.0

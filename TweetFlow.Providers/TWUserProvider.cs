@@ -28,7 +28,7 @@ namespace TweetFlow.Providers
         }
 
         // TODO: repo, provider, service, UW pattern....
-        public void IncreaseWordAndHashtagBannCount(long twitterId, int increaseWordBannCountWith = 1, int increaseHashtagBannCountWith = 1)
+        public (int HashtagBannPenalty, int WordBannPenalty) IncreaseWordAndHashtagBannCountAndPenaltyCount(long twitterId, int increaseWordBannCountWith = 1, int increaseHashtagBannCountWith = 1)
         {
             using (var context = new TweetFlowContext())
             {
@@ -43,9 +43,13 @@ namespace TweetFlow.Providers
                     };
                     context.Add(twUserInContext);
                 }
+                var hashtagPenalty = twUserInContext.HashtagBannCount;
+                var wordPenalty = twUserInContext.WordBannCount;
+
                 twUserInContext.HashtagBannCount += increaseHashtagBannCountWith;
                 twUserInContext.WordBannCount += increaseWordBannCountWith;
                 context.SaveChanges();
+                return (hashtagPenalty, wordPenalty);
             }
         }
     }

@@ -31,10 +31,22 @@ namespace TweetFlow.Services
             var increaseWordBannCount = 0;
             var increaseHashBannCount = 0;
 
-            if (tweet.Hashtags.Count > 1)
+            var hashtagCount = tweet.Hashtags.Count;
+            if (hashtagCount > 1 && hashtagCount <= 3)
             {
-                increaseWordBannCount = 1;
-                score = 0;
+                increaseHashBannCount = 1;
+            }
+            else if(hashtagCount > 3 && hashtagCount <= 5)
+            {
+                increaseHashBannCount = 2;
+            }
+            else if(hashtagCount > 5 && hashtagCount <= 9)
+            {
+                increaseHashBannCount = 3;
+            }
+            else if(hashtagCount > 9)
+            {
+                increaseHashBannCount = 5;
             }
 
             var trimmed = tweet.FullText.Replace(" ", string.Empty);
@@ -47,9 +59,16 @@ namespace TweetFlow.Services
                 score = 0;
             }
 
+            var actualPenalty = 1;
             if(increaseHashBannCount > 0 || increaseWordBannCount > 0)
             {
-                this.provider.IncreaseWordAndHashtagBannCount(tweet.User.Id, increaseWordBannCount, increaseWordBannCount);
+                var penalty = this.provider.IncreaseWordAndHashtagBannCountAndPenaltyCount(tweet.User.Id, increaseWordBannCount, increaseWordBannCount);
+                actualPenalty = penalty.HashtagBannPenalty + penalty.WordBannPenalty;
+            }
+
+            if(actualPenalty > 0)
+            {
+                score = score / actualPenalty;
             }
 
             if (tweet.User.Verified)
