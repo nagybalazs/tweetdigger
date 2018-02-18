@@ -15,7 +15,7 @@ namespace TweetFlow.Portal.Controllers
         {
             this.streamFactory = streamFactory;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

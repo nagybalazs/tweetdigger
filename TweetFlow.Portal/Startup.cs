@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
@@ -40,6 +41,19 @@ namespace TweetFlow.Portal
         {
             var credentials = new TwitterCredentials();
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
+
+            services
+                .AddAuthentication(auth =>
+                {
+                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddOpenIdConnect(opts =>
+                {
+                    Configuration.GetSection("OpenIdConnect").Bind(opts);
+                });
 
             services
                 .AddSignalR();
@@ -85,11 +99,10 @@ namespace TweetFlow.Portal
                 routes.MapHub<EthereumHub>("ethereum");
                 routes.MapHub<LiteCoinHub>("litecoin");
                 routes.MapHub<RippleHub>("ripple");
-            });
-
-            app.UseStaticFiles();
-
-            app.UseMvc(routes =>
+            })
+            .UseAuthentication()
+            .UseStaticFiles()
+            .UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
