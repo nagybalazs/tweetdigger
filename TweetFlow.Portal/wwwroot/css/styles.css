@@ -201,6 +201,7 @@ h2 {
     .tweet .tweet_details {
         display: flex;
         margin-top: 10px;
+        display: none;
     }
 
         .tweet .tweet_details div img {
@@ -256,4 +257,18 @@ h2 {
 
 .down h2 {
     color: #cc3446;
+}
+
+.tweet {
+    animation-name: tweetappear;
+    animation-duration: 1.4s;
+}
+
+@keyframes tweetappear {
+    0%   {
+        opacity: 0;
+    }
+    100% {
+        overflow: auto;
+    }
 }
