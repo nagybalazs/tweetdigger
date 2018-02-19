@@ -1,2 +1,28 @@
-﻿<h2>Hello admin</h2>
+﻿@model TweetFlow.Portal.Model.AdminModel
 
+<h2>Hello admin</h2>
+<p>Current state:</p>
+    @switch (Model.State)
+    {
+        case TweetFlow.Stream.StreamState.Paused:
+            {
+                <span>Paused</span>
+                break;
+            }
+        case TweetFlow.Stream.StreamState.Running:
+            {
+                <span>Running</span>
+                break;
+            }
+        case TweetFlow.Stream.StreamState.Stopped:
+            {
+                <span>Stopped</span>
+                break;
+            }
+    }
+<p>Last state: </p>
+<span>Occured: @Model.StreamInfo.OccuredAt.ToString("yyyy-MM-dd HH:mm:ss")</span>
+<span>Event type: @Model.StreamInfo.EventTypeEnum.ToString()</span>
+<span>Reason (if any): @Model.StreamInfo.Reason</span>
+<span>Exception (if any): @Model.StreamInfo.ExceptionMessage</span>
+<a asp-action="StartStream" asp-controller="Admin">Start</a>

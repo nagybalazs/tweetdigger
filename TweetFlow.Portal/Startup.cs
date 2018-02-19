@@ -43,6 +43,8 @@ namespace TweetFlow.Portal
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
 
             services
+                .AddOptions()
+                //.AddDbContext<TweetFlowContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TweetFlowConnection")))
                 .AddAuthentication(auth =>
                 {
                     auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -59,13 +61,12 @@ namespace TweetFlow.Portal
                 .AddSignalR();
 
             services
-                .AddOptions()
                 .AddTransient<ICredentials>(p => credentials)
                 .AddTransient<IOrderedQueue<int, Tweet, ScoredItem>, OrderedQueue>()
                 .AddTransient<IScoredCalculator<int, Tweet>, TweetScoreCalculator>()
-                .AddTransient<StreamFactory>()
-                .AddTransient<Subscriber>()
+                .AddSingleton<StreamFactory>()
                 .AddTransient<SampleStream>()
+                .AddTransient<TWStreamInfoProvider>()
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TWUserProvider>();
 
@@ -76,9 +77,9 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.ApplicationServices
-                .GetService<Subscriber>()
-                .Bootstrap();
+            //app.ApplicationServices
+            //    .GetService<Subscriber>()
+            //    .Bootstrap();
 
             if (env.IsDevelopment())
             {

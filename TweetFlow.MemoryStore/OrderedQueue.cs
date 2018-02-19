@@ -1,6 +1,7 @@
 ﻿using MoreLinq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using TweetFlow.Model;
 
@@ -14,8 +15,6 @@ namespace TweetFlow.MemoryStore
         private int readyWhenCountReached;
 
         public event EventHandler<Tweet> ContentAdded;
-
-        public bool InReadyState { get; private set; }
 
         public OrderedQueue()
         {
@@ -64,15 +63,12 @@ namespace TweetFlow.MemoryStore
                     this.items.Remove(minimumScoredItem);
                 }
                 this.items.Add(newItem);
-                if (this.InReadyState)
+                var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
+                if(maximumScoredItem == null)
                 {
-                    var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
-                    if(maximumScoredItem == null)
-                    {
-                        return;
-                    }
-                    this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
+                    return;
                 }
+                this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
             }
         }
 
@@ -83,9 +79,8 @@ namespace TweetFlow.MemoryStore
             {
                 return;
             }
-            if (this.InReadyState || (this.items.Count == this.readyWhenCountReached))
+            if (this.items.Count == this.readyWhenCountReached)
             {
-                this.InReadyState = true;
                 this.OutScoreMinimumScoredItem(item);
             }
             else

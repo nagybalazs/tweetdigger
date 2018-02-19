@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TweetFlow.MemoryStore;
 using TweetFlow.Model;
+using TweetFlow.Providers;
 using TweetFlow.Services;
 using Tweetinvi;
 using Tweetinvi.Models;
@@ -12,17 +14,31 @@ namespace TweetFlow.Stream
 {
     public class SampleStream
     {
-        public bool IsRunning { get; set; }
+        public bool IsStarted { get; set; }
+        public StreamState CurrentState
+        {
+            get
+            {
+                var intVal = this.filteredStream.StreamState;
+                return (StreamState)intVal;
+            }
+        }
         private IFilteredStream filteredStream;
 
         public IOrderedQueue<int, Model.Tweet, ScoredItem> Queue { get; set; }
         private IScoredCalculator<int, Model.Tweet> tweetScoreCalculator;
+        private TWStreamInfoProvider tWStreamInfoProvider;
 
-        public SampleStream(ICredentials credentials, OrderedQueue orderedQueue, IScoredCalculator<int, Model.Tweet> tweetScoreCalculator)
+        public SampleStream(
+            ICredentials credentials, 
+            OrderedQueue orderedQueue, 
+            IScoredCalculator<int, Model.Tweet> tweetScoreCalculator,
+            TWStreamInfoProvider tWStreamInfoProvider)
         {
             TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             Auth.SetCredentials(new Tweetinvi.Models.TwitterCredentials(credentials.ConsumerKey, credentials.ConsumerSecret, credentials.AccessToken, credentials.AccessTokenSecret));
+            this.tWStreamInfoProvider = tWStreamInfoProvider;
             this.Queue = orderedQueue;
             this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
             this.tweetScoreCalculator = tweetScoreCalculator;
@@ -85,11 +101,34 @@ namespace TweetFlow.Stream
 
         public async Task<SampleStream> StartAsync()
         {
-            this.IsRunning = true;
+            this.IsStarted = true;
             this.filteredStream.MatchingTweetReceived += (sender, args) =>
             {
                 this.FilterAndAddTweetToQueue(args.Tweet);
             };
+
+            this.filteredStream.StreamStopped += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStopped,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = args.Exception?.Message,
+                    Reason = args.DisconnectMessage.Reason
+                });
+            };
+
+            this.filteredStream.StreamStarted += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStarted,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = null
+                });
+            };
+
             await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             return this;
         }

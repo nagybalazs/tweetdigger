@@ -1,14 +1,85 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using TweetFlow.Model;
+using TweetFlow.Model.Hubs;
+using TweetFlow.Portal.Model;
+using TweetFlow.Providers;
+using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {
     [Authorize]
     public class AdminController : Controller
     {
+        private StreamFactory streamFactory;
+        private TWStreamInfoProvider tWStreamInfoProvider;
+        private IHubContext<BitCoinHub> bitcoinHub;
+        private IHubContext<EthereumHub> ethereumHub;
+        private IHubContext<RippleHub> rippleHub;
+        private IHubContext<LiteCoinHub> liteCoinHub;
+        public AdminController(StreamFactory streamFactory, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
+        {
+            this.streamFactory = streamFactory;
+            this.bitcoinHub = bitcoinHub;
+            this.ethereumHub = ethereumHub;
+            this.rippleHub = rippleHub;
+            this.liteCoinHub = liteCoinHub;
+            this.tWStreamInfoProvider = tWStreamInfoProvider;
+        }
         public IActionResult Index()
         {
-            return View();
+            var model = new AdminModel();
+            model.StreamInfo = this.tWStreamInfoProvider.GetLast();
+            model.State = this.streamFactory.GetStream().CurrentState;
+            return View(model);
+        }
+
+        public IActionResult StartStream()
+        {
+
+            var stream = this.streamFactory.GetStream();
+            if (!stream.IsStarted)
+            {
+                stream.Queue.ContentAdded += (a, b) =>
+                {
+                    this.SeparateTweet(b);
+                };
+                stream.StartAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+        private void SeparateTweet(Tweet tweet)
+        {
+            switch (tweet.Type)
+            {
+                case TweetType.Bitcoin:
+                    {
+                        this.InvokeSend(this.bitcoinHub, tweet);
+                        break;
+                    }
+                case TweetType.Ethereum:
+                    {
+                        this.InvokeSend(this.ethereumHub, tweet);
+                        break;
+                    }
+                case TweetType.LiteCoin:
+                    {
+                        this.InvokeSend(this.liteCoinHub, tweet);
+                        break;
+                    };
+                case TweetType.Ripple:
+                    {
+                        this.InvokeSend(this.rippleHub, tweet);
+                        break;
+                    }
+            }
+        }
+
+        private void InvokeSend<THub>(IHubContext<THub> hubContext, Tweet tweet) where THub : Hub
+        {
+            hubContext.Clients.All.InvokeAsync("send", tweet);
         }
     }
 }

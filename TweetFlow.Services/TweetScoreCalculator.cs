@@ -49,11 +49,11 @@ namespace TweetFlow.Services
                 increaseHashBannCount = 5;
             }
 
-            var trimmed = tweet.FullText.Replace(" ", string.Empty);
+            var trimmed = tweet.FullText.Replace(" ", string.Empty).ToLower();
 
             // TODO: finomítani, mert így szar
             var unallowedTags = new List<string> { "signup", "token", "project", "sale", "free", "grab your", "win", "join", "grab your", "easy money" };
-            if (unallowedTags.Any(w => tweet.FullText.ToLower().Contains(w)))
+            if (unallowedTags.Any(w => trimmed.Contains(w)))
             {
                 increaseWordBannCount = 1;
                 score = 0;
@@ -62,7 +62,7 @@ namespace TweetFlow.Services
             var actualPenalty = 1;
             if(increaseHashBannCount > 0 || increaseWordBannCount > 0)
             {
-                var penalty = this.provider.IncreaseWordAndHashtagBannCountAndPenaltyCount(tweet.User.Id, increaseWordBannCount, increaseWordBannCount);
+                var penalty = this.provider.IncreaseWordAndHashtagBannCountAndPenaltyCount(tweet.User.Id, increaseWordBannCount, increaseHashBannCount);
                 actualPenalty = penalty.HashtagBannPenalty + penalty.WordBannPenalty;
             }
 

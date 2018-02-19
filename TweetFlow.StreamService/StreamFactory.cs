@@ -2,38 +2,44 @@
 using TweetFlow.Stream;
 using TweetFlow.Services;
 using TweetFlow.Model;
+using TweetFlow.Providers;
 
 namespace TweetFlow.StreamService
 {
     public class StreamFactory
     {
-        public bool Running { get; set; }
         private ICredentials credentials;
         private IScoredCalculator<int, Tweet> tweetScoreCalculator;
-        
-        public StreamFactory(ICredentials credentials, IScoredCalculator<int, Tweet> tweetScoreCalculator)
+        private SampleStream stream;
+        private OrderedQueue orderedQueue;
+        private TWStreamInfoProvider tWStreamInfoProvider;
+
+        public StreamFactory(ICredentials credentials, IScoredCalculator<int, Tweet> tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
         {
             this.credentials = credentials;
             this.tweetScoreCalculator = tweetScoreCalculator;
+            this.tWStreamInfoProvider = tWStreamInfoProvider;
         }
 
-        public SampleStream Bitcoin()
+        public SampleStream GetStream()
         {
             return this.CreateTrackedStream("#bitcoin", "#ripple", "#litecoin", "#ethereum");
         }
 
         private SampleStream CreateTrackedStream(params string[] track)
         {
-            this.Running = true;
+            if (this.stream == null)
+            {
+                this.orderedQueue = new OrderedQueue();
 
-            var oq = new OrderedQueue();
+                this.stream =
+                    new SampleStream(this.credentials, this.orderedQueue, this.tweetScoreCalculator, this.tWStreamInfoProvider)
+                        .AddLanguage(Language.English)
+                        .AddTracks(track)
+                        .AddQueryParameter("result_type", "recent");
 
-            var ct = new SampleStream(credentials, oq, tweetScoreCalculator)
-                .AddLanguage(Language.English)
-                .AddTracks(track)
-                .AddQueryParameter("result_type", "recent");
-
-            return ct;
+            }
+            return this.stream;
         }
     }
 }

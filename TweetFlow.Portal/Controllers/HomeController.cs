@@ -1,14 +1,16 @@
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TweetFlow.EF;
+using Microsoft.AspNetCore.SignalR;
+using TweetFlow.Model;
+using TweetFlow.Model.Hubs;
 using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {
     public class HomeController : Controller
     {
+        private string tguid;
         private StreamFactory streamFactory;
 
         public HomeController(StreamFactory streamFactory)
