@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppModuleShared } from './app.shared.module';
 import { AppComponent } from './components/app/app.component';
-import { ChannelService } from './services/services';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -11,8 +10,7 @@ import { ChannelService } from './services/services';
         AppModuleShared
     ],
     providers: [
-        { provide: 'BASE_URL', useFactory: getBaseUrl },
-        ChannelService
+        { provide: 'BASE_URL', useFactory: getBaseUrl }
     ]
 })
 export class AppModule {

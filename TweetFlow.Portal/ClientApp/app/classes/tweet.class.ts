@@ -1,5 +1,6 @@
 ﻿import * as moment from 'moment';
 import { User } from './classes';
+import { TweetType } from './enum/tweettype.enum';
 
 export class Tweet {
     strId: string;
@@ -12,6 +13,7 @@ export class Tweet {
     favorited: boolean;
     isRetweet: boolean;
     user: User;
+    type: TweetType;
 
     static create(tweet: Tweet): Tweet {
         let created = new Tweet();
@@ -39,6 +41,8 @@ export class Tweet {
         if (isNaN(created.favoriteCount)) {
             created.favoriteCount = 0;
         }
+
+        created.type = +tweet.type;
 
         created.favorited = tweet.favorited;
         created.isRetweet = tweet.isRetweet;

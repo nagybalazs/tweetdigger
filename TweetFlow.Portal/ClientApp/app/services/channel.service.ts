@@ -1,6 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
 import { Channel } from '../classes/classes';
 import { Tweet } from '../classes/tweet.class';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ChannelService {
@@ -16,8 +18,8 @@ export class ChannelService {
         ];
     }
 
-    public faszom(): Tweet[] {
-        return this.http.get('');
+    public getCachedTweets(): Observable<Tweet[]> {
+        return this.http.get<Tweet[]>('/api/tweet/cachedtweets');
     }
 
 }

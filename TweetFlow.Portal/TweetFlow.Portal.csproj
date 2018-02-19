@@ -27,6 +27,7 @@
   <ItemGroup>
     <None Remove="ClientApp\app\classes\channel.class.ts" />
     <None Remove="ClientApp\app\classes\classes.ts" />
+    <None Remove="ClientApp\app\classes\enum\tweettype.enum.ts" />
     <None Remove="ClientApp\app\classes\tweet.class.ts" />
     <None Remove="ClientApp\app\classes\user.class.ts" />
     <None Remove="ClientApp\app\components\home.component.ts" />
@@ -46,6 +47,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\app\classes\classes.ts" />
     <TypeScriptCompile Include="ClientApp\app\classes\channel.class.ts" />
+    <TypeScriptCompile Include="ClientApp\app\classes\enum\tweettype.enum.ts" />
     <TypeScriptCompile Include="ClientApp\app\classes\tweet.class.ts" />
     <TypeScriptCompile Include="ClientApp\app\classes\user.class.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\home\home.component.ts" />

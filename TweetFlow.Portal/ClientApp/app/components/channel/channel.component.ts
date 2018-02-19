@@ -6,20 +6,27 @@ import { Tweet } from '../../classes/classes';
     selector: 'channel',
     templateUrl: './channel.component.html'
 })
-export class ChannelComponent implements OnInit {
+export class ChannelComponent {
+
+    private initialized: boolean = false;
 
     @Input()
     endpoint: string;
 
     @Input()
-    initialTweets: Tweet[];
+    set initialTweets(value: Tweet[]) {
+        this.tweets = value;
+        if (!this.initialized) {
+            this.initialize();
+        }
+    }
 
     public tweets: Tweet[] = [];
     private _hubConnetion: HubConnection;
 
     constructor() { }
 
-    ngOnInit() {
+    initialize() {
         this._hubConnetion = new HubConnection('/' + this.endpoint);
 
         this._hubConnetion.on('Send', (data: any) => {

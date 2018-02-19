@@ -5,7 +5,7 @@ using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {
-    [Route("tweet")]
+    [Route("api/tweet")]
     public class TweetController : Controller
     {
         private StreamFactory streamFactory;
