@@ -1,6 +1,7 @@
 ﻿using MoreLinq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using TweetFlow.Model;
@@ -14,6 +15,19 @@ namespace TweetFlow.MemoryStore
         private Stopwatch stopwatch;
         private IList<ScoredItem> items;
         private int readyWhenCountReached;
+
+        private IList<Tweet> cachedItems;
+        public IReadOnlyCollection<Tweet> CachedItems
+        {
+            get
+            {
+                if(this.cachedItems == null)
+                {
+                    this.cachedItems = new List<Tweet>();
+                }
+                return new ReadOnlyCollection<Tweet>(this.cachedItems);
+            }
+        }
 
         public event EventHandler<Tweet> ContentAdded;
 
@@ -72,6 +86,10 @@ namespace TweetFlow.MemoryStore
                     if(maximumScoredItem == null)
                     {
                         return;
+                    }
+                    if (this.cachedItems.Count < 100)
+                    {
+                        this.cachedItems.Add(maximumScoredItem.Content);
                     }
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }

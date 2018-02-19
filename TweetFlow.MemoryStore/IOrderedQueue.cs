@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace TweetFlow.MemoryStore
@@ -9,5 +10,6 @@ namespace TweetFlow.MemoryStore
         IOrderedQueue<TScore, TItemContent, TItem> SetReadyWhenCountReached(int readyWhenCountReached);
         void Add(TItem item);
         void Remove(TItem item);
+        IReadOnlyCollection<TItemContent> CachedItems { get; }
     }
 }

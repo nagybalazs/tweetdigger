@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { Channel } from '../../classes/classes';
 import { ChannelService } from '../../services/services';
+import { Http } from '@angular/http';
 
 @Component({
     templateUrl: 'home.component.html',
@@ -10,7 +11,7 @@ export class HomeComponent implements OnInit {
 
     channels: Channel[];
 
-    constructor() { }
+    constructor(private http: Http) { }
 
     ngOnInit() {
         this.channels = ChannelService.getChannels();

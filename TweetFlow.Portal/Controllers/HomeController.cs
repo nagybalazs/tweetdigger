@@ -10,13 +10,6 @@ namespace TweetFlow.Portal.Controllers
 {
     public class HomeController : Controller
     {
-        private string tguid;
-        private StreamFactory streamFactory;
-
-        public HomeController(StreamFactory streamFactory)
-        {
-            this.streamFactory = streamFactory;
-        }
         public IActionResult Index()
         {
             return View();

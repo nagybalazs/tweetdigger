@@ -11,6 +11,9 @@ export class ChannelComponent implements OnInit {
     @Input()
     endpoint: string;
 
+    @Input()
+    initialTweets: Tweet[];
+
     public tweets: Tweet[] = [];
     private _hubConnetion: HubConnection;
 

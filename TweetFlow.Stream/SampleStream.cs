@@ -14,7 +14,13 @@ namespace TweetFlow.Stream
 {
     public class SampleStream
     {
-        public bool IsStarted { get; set; }
+        public bool IsStarted
+        {
+            get
+            {
+                return this.CurrentState == StreamState.Running;
+            }
+        }
         public StreamState CurrentState
         {
             get
@@ -101,7 +107,6 @@ namespace TweetFlow.Stream
 
         public async Task<SampleStream> StartAsync()
         {
-            this.IsStarted = true;
             this.filteredStream.MatchingTweetReceived += (sender, args) =>
             {
                 this.FilterAndAddTweetToQueue(args.Tweet);
