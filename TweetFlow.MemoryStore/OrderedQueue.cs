@@ -11,6 +11,7 @@ namespace TweetFlow.MemoryStore
     {
         private const int defaultReadyWhenCountReached = 50;
 
+        private Stopwatch stopwatch;
         private IList<ScoredItem> items;
         private int readyWhenCountReached;
 
@@ -18,6 +19,8 @@ namespace TweetFlow.MemoryStore
 
         public OrderedQueue()
         {
+            this.stopwatch = new Stopwatch();
+            this.stopwatch.Start();
             this.readyWhenCountReached = defaultReadyWhenCountReached;
             this.items = new List<ScoredItem>();
         }
@@ -62,13 +65,16 @@ namespace TweetFlow.MemoryStore
                 {
                     this.items.Remove(minimumScoredItem);
                 }
-                this.items.Add(newItem);
-                var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
-                if(maximumScoredItem == null)
+                if (this.stopwatch.ElapsedMilliseconds >= (10*1000))
                 {
-                    return;
+                    this.stopwatch.Restart();
+                    var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
+                    if(maximumScoredItem == null)
+                    {
+                        return;
+                    }
+                    this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
-                this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
             }
         }
 
@@ -86,7 +92,6 @@ namespace TweetFlow.MemoryStore
             else
             {
                 this.items.Add(item);
-                this.ContentAdded?.Invoke(null, item.Content);
             }
         }
 
