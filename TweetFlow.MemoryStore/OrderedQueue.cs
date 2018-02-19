@@ -87,10 +87,15 @@ namespace TweetFlow.MemoryStore
                     {
                         return;
                     }
-                    if (this.cachedItems.Count < 100)
+                    if (this.cachedItems.Count >= 100)
                     {
-                        this.cachedItems.Add(maximumScoredItem.Content);
+                        var remove = this.cachedItems.FirstOrDefault();
+                        if(remove != null)
+                        {
+                            this.cachedItems.Remove(remove);
+                        }
                     }
+                    this.cachedItems.Add(maximumScoredItem.Content);
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
             }
@@ -98,7 +103,7 @@ namespace TweetFlow.MemoryStore
 
         public void Add(ScoredItem item)
         {
-            var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.Type);
+            var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.FullText, item.Content.Type);
             if (alreadyAdded != null)
             {
                 return;
@@ -113,9 +118,9 @@ namespace TweetFlow.MemoryStore
             }
         }
 
-        private ScoredItem GetItemByStrIdAndType(string strId, TweetType type)
+        private ScoredItem GetItemByStrIdAndType(string strId, string fullText, TweetType type)
         {
-            return this.items.FirstOrDefault(item => item.Content.StrId == strId && item.Content.Type == type);
+            return this.items.FirstOrDefault(item => item.Content.StrId == strId && item.Content.Type == type && item.Content.FullText == fullText);
         }
 
         public void Remove(ScoredItem item)

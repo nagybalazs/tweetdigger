@@ -52,7 +52,9 @@ namespace TweetFlow.Services
             var trimmed = tweet.FullText.Replace(" ", string.Empty).ToLower();
 
             // TODO: finomítani, mert így szar
-            var unallowedTags = new List<string> { "signup", "token", "project", "sale", "free", "grab your", "win", "join", "grab your", "easy money" };
+            var unallowedTags = 
+                new List<string> { "signup", "token", "project", "sale", "free", "grabyour", "win", "join", "grab your", "easymoney", "freebitcoin", "passiveincome", ":arrow_left:", ":tada:", ":red_circle", "join", "joining", "register", "registering", "don'tmiss", "dontmiss", "click", ":fire:", ":rocket:", "comingsoon", "promotion", "promotions", ":heavy_check_mark:", "youcan", "contribute", "deposit", ":zap:", "pre-sale", "sale", "bonus", "initialcoinoffering", "presale", "pre-sale", "earnbitcoin", "giveaway" };
+
             if (unallowedTags.Any(w => trimmed.Contains(w)))
             {
                 increaseWordBannCount = 1;
