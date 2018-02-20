@@ -21,8 +21,8 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.channelService.getCachedTweets()
             .subscribe(data => {
-                this.bitcoin = data.filter(tweet => tweet.type == TweetType.Ethereum).map(tweet => Tweet.create(tweet));
-                this.ethereum = data.filter(tweet => tweet.type == TweetType.Bitcoin).map(tweet => Tweet.create(tweet));
+                this.bitcoin = data.filter(tweet => tweet.type == TweetType.Bitcoin).map(tweet => Tweet.create(tweet));
+                this.ethereum = data.filter(tweet => tweet.type == TweetType.Ethereum).map(tweet => Tweet.create(tweet));
                 this.ripple = data.filter(tweet => tweet.type == TweetType.Ripple).map(tweet => Tweet.create(tweet));
                 this.litecoin = data.filter(tweet => tweet.type == TweetType.LiteCoin).map(tweet => Tweet.create(tweet));
                 this.channels = ChannelService.getChannels();

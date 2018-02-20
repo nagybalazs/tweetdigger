@@ -4,9 +4,8 @@
     <p class="username">{{tweet.user.screenName}}</p>
     <p class="time">{{minutes}}</p>
 </div>
-<div class="tweet_content">
-    {{tweet.fullText}}
-</div>
+<div class="tweet_content" [innerHTML]="tweet.linkedFullText"></div>
+
 <div class="tweet_details">
     <div class="retweet">
         <img src="../../assets/retweet_icon.png" />

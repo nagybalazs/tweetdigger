@@ -1,10 +1,12 @@
 ﻿import * as moment from 'moment';
 import { User } from './classes';
 import { TweetType } from './enum/tweettype.enum';
+import * as linkify from 'linkify-it';
 
 export class Tweet {
     strId: string;
     fullText: string;
+    linkedFullText: string;
     createdAt: moment.Moment;
     quoteCount: number;
     replyCount: number;
@@ -18,6 +20,18 @@ export class Tweet {
     static create(tweet: Tweet): Tweet {
         let created = new Tweet();
 
+        let ly = new linkify();
+        let val = ly.match(tweet.fullText);
+
+        if (val) {
+            val.forEach(va => {
+                created.linkedFullText = tweet.fullText.replace(va.url, `<a href="${va.url}" target="_blank">${va.url}</a>`);
+            });
+        }
+        else {
+            created.linkedFullText = tweet.fullText;
+        }
+        console.log(created.linkedFullText);
         created.strId = tweet.strId;
         created.fullText = tweet.fullText;
         created.createdAt = moment.utc(tweet.createdAt);

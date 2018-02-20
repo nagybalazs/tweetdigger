@@ -108,6 +108,12 @@ namespace TweetFlow.MemoryStore
             {
                 return;
             }
+
+            if(items.Count > 0)
+            {
+                var kek = items.Average(p => p.Score);
+                Debug.WriteLine($"AVG: {kek.ToString()}");
+            }
             if (this.items.Count == this.readyWhenCountReached)
             {
                 this.OutScoreMinimumScoredItem(item);
