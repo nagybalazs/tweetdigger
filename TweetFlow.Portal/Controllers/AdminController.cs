@@ -18,6 +18,9 @@ namespace TweetFlow.Portal.Controllers
         private IHubContext<EthereumHub> ethereumHub;
         private IHubContext<RippleHub> rippleHub;
         private IHubContext<LiteCoinHub> liteCoinHub;
+        
+        // HubDictionary? => külön osztály, object, tryGetValue-ban cast... Csehszlovák, de rövid, és kintről szép lehet
+
         public AdminController(StreamFactory streamFactory, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
         { 
             this.streamFactory = streamFactory;
@@ -54,22 +57,22 @@ namespace TweetFlow.Portal.Controllers
         {
             switch (tweet.Type)
             {
-                case TweetType.Bitcoin:
+                case "bitcoin":
                     {
                         this.InvokeSend(this.bitcoinHub, tweet);
                         break;
                     }
-                case TweetType.Ethereum:
+                case "ethereum":
                     {
                         this.InvokeSend(this.ethereumHub, tweet);
                         break;
                     }
-                case TweetType.LiteCoin:
+                case "litecoin":
                     {
                         this.InvokeSend(this.liteCoinHub, tweet);
                         break;
                     };
-                case TweetType.Ripple:
+                case "ripple":
                     {
                         this.InvokeSend(this.rippleHub, tweet);
                         break;

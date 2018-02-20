@@ -11,5 +11,6 @@ namespace TweetFlow.MemoryStore
         void Add(TItem item);
         void Remove(TItem item);
         IReadOnlyCollection<TItemContent> CachedItems { get; }
+        IOrderedQueue<TScore, TItemContent, TItem> SetQueueType(string queueType);
     }
 }

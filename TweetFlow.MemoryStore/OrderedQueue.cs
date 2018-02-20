@@ -10,10 +10,19 @@ namespace TweetFlow.MemoryStore
 {
     public class OrderedQueue : IOrderedQueue<int, Tweet, ScoredItem>
     {
+        private Dictionary<string, Stopwatch> stopwatchContainer;
         private const int defaultReadyWhenCountReached = 50;
 
-        private Stopwatch stopwatch;
+        private string queueType { get; set; }
+
         private IList<ScoredItem> items;
+        private IList<ScoredItem> typedItems
+        {
+            get
+            {
+                return this.items.Where(p => p.Content.Type == this.queueType).ToList();
+            }
+        }
         private int readyWhenCountReached;
 
         private IList<Tweet> cachedItems;
@@ -33,35 +42,32 @@ namespace TweetFlow.MemoryStore
 
         public OrderedQueue()
         {
-            this.stopwatch = new Stopwatch();
-            this.stopwatch.Start();
+            this.stopwatchContainer = new Dictionary<string, Stopwatch>();
             this.readyWhenCountReached = defaultReadyWhenCountReached;
             this.items = new List<ScoredItem>();
         }
 
-        private ScoredItem GetMinimumScoredItem(TweetType tweetType)
+        private ScoredItem GetMinimumScoredItem()
         {
-            var itemsWithSameType = items.Where(item => item.Content.Type == tweetType);
-            if(itemsWithSameType.Count() < 1)
+            if(typedItems.Count() < 1)
             {
                 return null;
             }
-            return itemsWithSameType.MinBy(item => item.Score);
+            return typedItems.MinBy(item => item.Score);
         }
 
-        private ScoredItem GetMaximumScoredItem(TweetType type)
+        private ScoredItem GetMaximumScoredItem()
         {
-            var itemsWithSameType = items.Where(item => item.Content.Type == type);
-            if(itemsWithSameType.Count() < 1)
+            if(typedItems.Count() < 1)
             {
                 return null;
             }
-            return this.items.MaxBy(item => item.Score);
+            return this.typedItems.MaxBy(item => item.Score);
         }
 
-        private ScoredItem RemoveMaximumScoredItem(TweetType type)
+        private ScoredItem RemoveMaximumScoredItem()
         {
-            var maximumScoredItem = this.GetMaximumScoredItem(type);
+            var maximumScoredItem = this.GetMaximumScoredItem();
             if(maximumScoredItem == null)
             {
                 return null;
@@ -70,51 +76,73 @@ namespace TweetFlow.MemoryStore
             return maximumScoredItem;
         }
 
+        private Stopwatch stopwatch
+        {
+            get
+            {
+                if (this.stopwatchContainer.ContainsKey(this.queueType))
+                {
+                    this.stopwatchContainer.TryGetValue(this.queueType, out Stopwatch stopWatch);
+                    return stopWatch;
+                }
+                else
+                {
+                    var newWatch = new Stopwatch();
+                    newWatch.Start();
+                    this.stopwatchContainer.Add(this.queueType, newWatch);
+                    return newWatch;
+                }
+            }
+        }
+
         private void OutScoreMinimumScoredItem(ScoredItem newItem)
         {
-            var minimumScoredItem = this.GetMinimumScoredItem(newItem.Content.Type);
+            var minimumScoredItem = this.GetMinimumScoredItem();
             if(minimumScoredItem == null || newItem.Score > minimumScoredItem.Score)
             {
                 if (minimumScoredItem != null)
                 {
                     this.items.Remove(minimumScoredItem);
+                    this.items.Add(newItem);
                 }
+
                 if (this.stopwatch.ElapsedMilliseconds >= (10*1000))
                 {
                     this.stopwatch.Restart();
-                    var maximumScoredItem = this.RemoveMaximumScoredItem(newItem.Content.Type);
+                    var maximumScoredItem = this.RemoveMaximumScoredItem();
                     if(maximumScoredItem == null)
                     {
                         return;
                     }
-                    if (this.cachedItems.Count >= 100)
-                    {
-                        var remove = this.cachedItems.FirstOrDefault();
-                        if(remove != null)
-                        {
-                            this.cachedItems.Remove(remove);
-                        }
-                    }
-                    this.cachedItems.Add(maximumScoredItem.Content);
+                    this.CacheItem(maximumScoredItem.Content);
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
+
             }
+        }
+
+        private void CacheItem(Tweet tweet)
+        {
+            if(this.cachedItems.Count(p => p.Type == this.queueType) >= 100)
+            {
+                var remove = this.cachedItems.FirstOrDefault(p => p.Type == this.queueType);
+                if(remove != null)
+                {
+                    this.cachedItems.Remove(remove);
+                }
+            }
+            this.cachedItems.Add(tweet);
         }
 
         public void Add(ScoredItem item)
         {
-            var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.FullText, item.Content.Type);
+            var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.FullText);
             if (alreadyAdded != null)
             {
                 return;
             }
 
-            if(items.Count > 0)
-            {
-                var kek = items.Average(p => p.Score);
-                Debug.WriteLine($"AVG: {kek.ToString()}");
-            }
-            if (this.items.Count == this.readyWhenCountReached)
+            if (this.typedItems.Count >= this.readyWhenCountReached)
             {
                 this.OutScoreMinimumScoredItem(item);
             }
@@ -124,9 +152,9 @@ namespace TweetFlow.MemoryStore
             }
         }
 
-        private ScoredItem GetItemByStrIdAndType(string strId, string fullText, TweetType type)
+        private ScoredItem GetItemByStrIdAndType(string strId, string fullText)
         {
-            return this.items.FirstOrDefault(item => item.Content.StrId == strId && item.Content.Type == type && item.Content.FullText == fullText);
+            return this.typedItems.FirstOrDefault(item => item.Content.StrId == strId  && item.Content.FullText == fullText);
         }
 
         public void Remove(ScoredItem item)
@@ -137,6 +165,12 @@ namespace TweetFlow.MemoryStore
         public IOrderedQueue<int, Tweet, ScoredItem> SetReadyWhenCountReached(int readyWhenCountReached)
         {
             this.readyWhenCountReached = readyWhenCountReached;
+            return this;
+        }
+
+        public IOrderedQueue<int, Tweet, ScoredItem> SetQueueType(string queueType)
+        {
+            this.queueType = queueType;
             return this;
         }
     }

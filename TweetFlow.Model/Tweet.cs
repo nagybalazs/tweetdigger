@@ -5,7 +5,7 @@ namespace TweetFlow.Model
 {
     public class Tweet
     {
-        public TweetType Type { get; set; }
+        public string Type { get; set; }
         public string StrId { get; set; }
         public string FullText { get; set; }
         /// <summary>

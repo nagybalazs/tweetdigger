@@ -143,32 +143,16 @@ namespace TweetFlow.Stream
             var scoredItem = new ScoredItem(this.CreateTweet(tweet));
             scoredItem.SetCustomScoreCalculator(this.tweetScoreCalculator);
             scoredItem.CalculateScore();
+            var supported = new List<string> { "bitcoin", "ethereum", "ripple", "litecoin" };
 
-            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text);
+            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text.Replace("#", string.Empty).ToLower());
             foreach (var hashtag in hashtags)
             {
-                if (hashtag.IsMatchToType(TweetType.Bitcoin))
+                var match = supported.FirstOrDefault(p => p == hashtag);
+                if(match != null)
                 {
-                    scoredItem.Content.Type = TweetType.Bitcoin;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.Ethereum))
-                {
-                    scoredItem.Content.Type = TweetType.Ethereum;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.Ripple))
-                {
-                    scoredItem.Content.Type = TweetType.Ripple;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.LiteCoin))
-                {
-                    scoredItem.Content.Type = TweetType.LiteCoin;
-                    this.Queue.Add(scoredItem);
+                    scoredItem.Content.Type = match;
+                    this.Queue.SetQueueType(scoredItem.Content.Type).Add(scoredItem);
                 }
             }
         }
