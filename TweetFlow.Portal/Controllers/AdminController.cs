@@ -9,7 +9,7 @@ using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AdminController : Controller
     {
         private StreamFactory streamFactory;
@@ -19,7 +19,7 @@ namespace TweetFlow.Portal.Controllers
         private IHubContext<RippleHub> rippleHub;
         private IHubContext<LiteCoinHub> liteCoinHub;
         public AdminController(StreamFactory streamFactory, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
-        {
+        { 
             this.streamFactory = streamFactory;
             this.bitcoinHub = bitcoinHub;
             this.ethereumHub = ethereumHub;

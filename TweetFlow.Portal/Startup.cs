@@ -44,7 +44,6 @@ namespace TweetFlow.Portal
 
             services
                 .AddOptions()
-                //.AddDbContext<TweetFlowContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TweetFlowConnection")))
                 .AddAuthentication(auth =>
                 {
                     auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -91,7 +90,7 @@ namespace TweetFlow.Portal
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseSignalR(routes =>

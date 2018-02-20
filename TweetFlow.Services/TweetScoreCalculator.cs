@@ -55,10 +55,33 @@ namespace TweetFlow.Services
             var unallowedTags = 
                 new List<string> { "signup", "token", "project", "sale", "free", "grabyour", "win", "join", "grab your", "easymoney", "freebitcoin", "passiveincome", ":arrow_left:", ":tada:", ":red_circle", "join", "joining", "register", "registering", "don'tmiss", "dontmiss", "click", ":fire:", ":rocket:", "comingsoon", "promotion", "promotions", ":heavy_check_mark:", "youcan", "contribute", "deposit", ":zap:", "pre-sale", "sale", "bonus", "initialcoinoffering", "presale", "pre-sale", "earnbitcoin", "giveaway" };
 
-            if (unallowedTags.Any(w => trimmed.Contains(w)))
+            var bannedWordCounter = 0;
+            foreach(var word in unallowedTags)
             {
-                increaseWordBannCount = 1;
-                score = 0;
+                if (trimmed.Contains(word))
+                {
+                    bannedWordCounter += 1;
+                }
+            }
+
+            if(bannedWordCounter > 0)
+            {
+                if(bannedWordCounter > 0 && bannedWordCounter <= 3)
+                {
+                    increaseWordBannCount = 1;
+                }
+                else if(bannedWordCounter > 3 && bannedWordCounter <= 5)
+                {
+                    increaseWordBannCount = 2;
+                }
+                else if(bannedWordCounter > 5 && bannedWordCounter <= 9)
+                {
+                    increaseWordBannCount = 3;
+                }
+                else if(bannedWordCounter > 9)
+                {
+                    increaseWordBannCount = 5;
+                }
             }
 
             var actualPenalty = 1;
