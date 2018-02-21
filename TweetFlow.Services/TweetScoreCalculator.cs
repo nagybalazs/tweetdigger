@@ -61,9 +61,9 @@ namespace TweetFlow.Services
                 if (trimmed.Contains(word))
                 {
                     bannedWordCounter += 1;
+                    score = 0;
                 }
             }
-
             if(bannedWordCounter > 0)
             {
                 if(bannedWordCounter > 0 && bannedWordCounter <= 3)
@@ -73,6 +73,7 @@ namespace TweetFlow.Services
                 else if(bannedWordCounter > 3 && bannedWordCounter <= 5)
                 {
                     increaseWordBannCount = 2;
+                    score = 0;
                 }
                 else if(bannedWordCounter > 5 && bannedWordCounter <= 9)
                 {
