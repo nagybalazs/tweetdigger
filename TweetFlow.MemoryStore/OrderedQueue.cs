@@ -8,7 +8,7 @@ using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
-    public class OrderedQueue : IOrderedQueue<int, Tweet, ScoredItem>
+    public class OrderedQueue //: IOrderedQueue<int, Tweet, ScoredItem>
     {
         private Dictionary<string, Stopwatch> stopwatchContainer;
         private const int defaultReadyWhenCountReached = 50;
@@ -162,13 +162,13 @@ namespace TweetFlow.MemoryStore
             this.items.Remove(item);
         }
 
-        public IOrderedQueue<int, Tweet, ScoredItem> SetReadyWhenCountReached(int readyWhenCountReached)
+        public OrderedQueue SetReadyWhenCountReached(int readyWhenCountReached)
         {
             this.readyWhenCountReached = readyWhenCountReached;
             return this;
         }
 
-        public IOrderedQueue<int, Tweet, ScoredItem> SetQueueType(string queueType)
+        public OrderedQueue SetQueueType(string queueType)
         {
             this.queueType = queueType;
             return this;

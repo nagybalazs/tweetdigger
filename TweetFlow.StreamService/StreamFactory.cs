@@ -1,6 +1,5 @@
 ﻿using TweetFlow.MemoryStore;
 using TweetFlow.Stream;
-using TweetFlow.Services;
 using TweetFlow.Model;
 using TweetFlow.Providers;
 
@@ -9,12 +8,12 @@ namespace TweetFlow.StreamService
     public class StreamFactory
     {
         private ICredentials credentials;
-        private IScoredCalculator<int, Tweet> tweetScoreCalculator;
+        private TweetScoreCalculator tweetScoreCalculator;
         private SampleStream stream;
         private OrderedQueue orderedQueue;
         private TWStreamInfoProvider tWStreamInfoProvider;
 
-        public StreamFactory(ICredentials credentials, IScoredCalculator<int, Tweet> tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
+        public StreamFactory(ICredentials credentials, TweetScoreCalculator tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
         {
             this.credentials = credentials;
             this.tweetScoreCalculator = tweetScoreCalculator;

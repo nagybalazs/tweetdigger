@@ -1,23 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TweetFlow.EF;
 using TweetFlow.MemoryStore;
-using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
-using TweetFlow.Portal.Controllers;
 using TweetFlow.Providers;
-using TweetFlow.Services;
 using TweetFlow.Stream;
 using TweetFlow.StreamService;
 
@@ -61,8 +51,8 @@ namespace TweetFlow.Portal
 
             services
                 .AddTransient<ICredentials>(p => credentials)
-                .AddTransient<IOrderedQueue<int, Tweet, ScoredItem>, OrderedQueue>()
-                .AddTransient<IScoredCalculator<int, Tweet>, TweetScoreCalculator>()
+                .AddTransient<OrderedQueue>()
+                .AddTransient<TweetScoreCalculator>()
                 .AddSingleton<StreamFactory>()
                 .AddTransient<SampleStream>()
                 .AddTransient<TWStreamInfoProvider>()

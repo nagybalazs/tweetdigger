@@ -3,9 +3,9 @@ using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
-    public class ScoredItem : IOrderedItem<int, Tweet>
+    public class ScoredItem //: IOrderedItem<int, Tweet>
     {
-        private IScoredCalculator<int, Tweet> calculator;
+        private TweetScoreCalculator calculator;
         public ScoredItem(Tweet content)
         {
             this.Content = content;
@@ -24,7 +24,7 @@ namespace TweetFlow.MemoryStore
             return this.Score;
         }
 
-        public void SetCustomScoreCalculator(IScoredCalculator<int, Tweet> calculator)
+        public void SetCustomScoreCalculator(TweetScoreCalculator calculator)
         {
             this.calculator = calculator;
         }

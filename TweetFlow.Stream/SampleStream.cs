@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TweetFlow.MemoryStore;
-using TweetFlow.Model;
 using TweetFlow.Providers;
-using TweetFlow.Services;
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Streaming;
@@ -31,14 +29,14 @@ namespace TweetFlow.Stream
         }
         private IFilteredStream filteredStream;
 
-        public IOrderedQueue<int, Model.Tweet, ScoredItem> Queue { get; set; }
-        private IScoredCalculator<int, Model.Tweet> tweetScoreCalculator;
+        public OrderedQueue Queue { get; set; }
+        private TweetScoreCalculator tweetScoreCalculator;
         private TWStreamInfoProvider tWStreamInfoProvider;
 
         public SampleStream(
             ICredentials credentials, 
             OrderedQueue orderedQueue, 
-            IScoredCalculator<int, Model.Tweet> tweetScoreCalculator,
+            TweetScoreCalculator tweetScoreCalculator,
             TWStreamInfoProvider tWStreamInfoProvider)
         {
             TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
