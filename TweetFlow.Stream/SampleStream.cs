@@ -117,7 +117,7 @@ namespace TweetFlow.Stream
                     EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStopped,
                     OccuredAt = DateTime.UtcNow,
                     ExceptionMessage = args.Exception?.Message,
-                    Reason = args.DisconnectMessage.Reason
+                    Reason = args.DisconnectMessage?.Reason
                 });
             };
 
@@ -129,6 +129,39 @@ namespace TweetFlow.Stream
                     OccuredAt = DateTime.UtcNow,
                     ExceptionMessage = null,
                     Reason = null
+                });
+            };
+
+            this.filteredStream.DisconnectMessageReceived += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamDisconnected,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = args.DisconnectMessage?.Reason
+                });
+            };
+
+            this.filteredStream.LimitReached += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.LimitReached,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = $"Number of Tweets not received: {args.NumberOfTweetsNotReceived}"
+                });
+            };
+
+            this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.FallingBehind,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = args.WarningMessage?.Message
                 });
             };
 

@@ -3,6 +3,9 @@
     public enum StreamInfoEventType
     {
         StreamStarted,
-        StreamStopped
+        StreamStopped,
+        StreamDisconnected,
+        LimitReached,
+        FallingBehind
     }
 }

@@ -142,7 +142,7 @@ namespace TweetFlow.MemoryStore
                 return;
             }
 
-            if (item.IsCelebrity || this.typedItems.Count >= this.readyWhenCountReached)
+            if (this.typedItems.Count >= this.readyWhenCountReached)
             {
                 this.OutScoreMinimumScoredItem(item);
             }
