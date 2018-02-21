@@ -1,4 +1,4 @@
-﻿<div class="tweeet_title">
+﻿<div class="tweeet_title" [class.celebrity]="tweet.celebrity">
     <img [src]="tweet.user.profileImageUrl400x400" />
     <h2 class="name">{{tweet.user.name}}</h2>
     <p class="username">{{tweet.user.screenName}}</p>
