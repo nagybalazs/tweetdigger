@@ -1,13 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
-    public class ScoredItem //: IOrderedItem<int, Tweet>
+    public class ScoredItem
     {
+        private List<string> celebrityIds;
+        public bool IsCelebrity
+        {
+            get
+            {
+                return this.celebrityIds.Contains(this.Content.StrId);
+            }
+        }
+
         private TweetScoreCalculator calculator;
         public ScoredItem(Tweet content)
         {
+            this.celebrityIds = new List<string> { "" };
             this.Content = content;
         }
 

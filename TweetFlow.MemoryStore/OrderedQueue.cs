@@ -8,7 +8,7 @@ using TweetFlow.Model;
 
 namespace TweetFlow.MemoryStore
 {
-    public class OrderedQueue //: IOrderedQueue<int, Tweet, ScoredItem>
+    public class OrderedQueue
     {
         private Dictionary<string, Stopwatch> stopwatchContainer;
         private const int defaultReadyWhenCountReached = 50;
@@ -142,7 +142,7 @@ namespace TweetFlow.MemoryStore
                 return;
             }
 
-            if (this.typedItems.Count >= this.readyWhenCountReached)
+            if (item.IsCelebrity || this.typedItems.Count >= this.readyWhenCountReached)
             {
                 this.OutScoreMinimumScoredItem(item);
             }
