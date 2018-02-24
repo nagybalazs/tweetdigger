@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TweetFlow.MemoryStore;
-using TweetFlow.Model;
-using TweetFlow.Services;
+using TweetFlow.Providers;
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Streaming;
@@ -12,17 +13,37 @@ namespace TweetFlow.Stream
 {
     public class SampleStream
     {
-        public bool IsRunning { get; set; }
+        public bool IsStarted
+        {
+            get
+            {
+                return this.CurrentState == StreamState.Running;
+            }
+        }
+        public StreamState CurrentState
+        {
+            get
+            {
+                var intVal = this.filteredStream.StreamState;
+                return (StreamState)intVal;
+            }
+        }
         private IFilteredStream filteredStream;
 
-        public IOrderedQueue<int, Model.Tweet, ScoredItem> Queue { get; set; }
-        private IScoredCalculator<int, Model.Tweet> tweetScoreCalculator;
+        public OrderedQueue Queue { get; set; }
+        private TweetScoreCalculator tweetScoreCalculator;
+        private TWStreamInfoProvider tWStreamInfoProvider;
 
-        public SampleStream(ICredentials credentials, OrderedQueue orderedQueue, IScoredCalculator<int, Model.Tweet> tweetScoreCalculator)
+        public SampleStream(
+            ICredentials credentials, 
+            OrderedQueue orderedQueue, 
+            TweetScoreCalculator tweetScoreCalculator,
+            TWStreamInfoProvider tWStreamInfoProvider)
         {
             TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             Auth.SetCredentials(new Tweetinvi.Models.TwitterCredentials(credentials.ConsumerKey, credentials.ConsumerSecret, credentials.AccessToken, credentials.AccessTokenSecret));
+            this.tWStreamInfoProvider = tWStreamInfoProvider;
             this.Queue = orderedQueue;
             this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
             this.tweetScoreCalculator = tweetScoreCalculator;
@@ -85,11 +106,92 @@ namespace TweetFlow.Stream
 
         public async Task<SampleStream> StartAsync()
         {
-            this.IsRunning = true;
             this.filteredStream.MatchingTweetReceived += (sender, args) =>
             {
-                this.FilterAndAddTweetToQueue(args.Tweet);
+                try
+                {
+                    this.FilterAndAddTweetToQueue(args.Tweet);
+                }
+                catch(Exception ex)
+                {
+                    var extText = this.ExtractExceptionFullMessge(ex);
+                    tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                    {
+                        EventTypeEnum = DatabaseModel.StreamInfoEventType.HandledException,
+                        OccuredAt = DateTime.UtcNow,
+                        ExceptionMessage = extText,
+                        Reason = null
+                    });
+                }
             };
+
+            this.filteredStream.StreamStopped += (sender, args) =>
+            {
+
+                this.Queue.Rekt();
+
+                var fullMessage = string.Empty;
+
+                var ex = args.Exception;
+                while(ex != null)
+                {
+                    fullMessage += $"EXMS: {ex.Message} EXST: {ex.StackTrace}";
+                    ex = ex.InnerException;
+                }
+
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStopped,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = fullMessage,
+                    Reason = args.DisconnectMessage?.Reason
+                });
+            };
+
+            this.filteredStream.StreamStarted += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStarted,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = null
+                });
+            };
+
+            this.filteredStream.DisconnectMessageReceived += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamDisconnected,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = args.DisconnectMessage?.Reason
+                });
+            };
+
+            this.filteredStream.LimitReached += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.LimitReached,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = $"Number of Tweets not received: {args.NumberOfTweetsNotReceived}"
+                });
+            };
+
+            this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
+            {
+                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                {
+                    EventTypeEnum = DatabaseModel.StreamInfoEventType.FallingBehind,
+                    OccuredAt = DateTime.UtcNow,
+                    ExceptionMessage = null,
+                    Reason = args.WarningMessage?.Message
+                });
+            };
+
             await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             return this;
         }
@@ -98,33 +200,16 @@ namespace TweetFlow.Stream
         { 
             var scoredItem = new ScoredItem(this.CreateTweet(tweet));
             scoredItem.SetCustomScoreCalculator(this.tweetScoreCalculator);
-            scoredItem.CalculateScore();
-
-            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text);
+            var supported = new List<string> { "bitcoin", "ethereum", "ripple", "litecoin" };
+            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text.Replace("#", string.Empty).ToLower());
             foreach (var hashtag in hashtags)
             {
-                if (hashtag.IsMatchToType(TweetType.Bitcoin))
+                var match = supported.FirstOrDefault(p => p == hashtag);
+                if(match != null)
                 {
-                    scoredItem.Content.Type = TweetType.Bitcoin;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.Ethereum))
-                {
-                    scoredItem.Content.Type = TweetType.Ethereum;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.Ripple))
-                {
-                    scoredItem.Content.Type = TweetType.Ripple;
-                    this.Queue.Add(scoredItem);
-                }
-
-                if (hashtag.IsMatchToType(TweetType.LiteCoin))
-                {
-                    scoredItem.Content.Type = TweetType.LiteCoin;
-                    this.Queue.Add(scoredItem);
+                    scoredItem.Content.Type = match;
+                    scoredItem.CalculateScore();
+                    this.Queue.SetQueueType(scoredItem.Content.Type).Add(scoredItem);
                 }
             }
         }
@@ -159,6 +244,17 @@ namespace TweetFlow.Stream
                 }
             };
             return tweet;
+        }
+
+        private string ExtractExceptionFullMessge(Exception ex)
+        {
+            var sb = new StringBuilder();
+            while(ex != null)
+            {
+                sb.Append($"Exception Message: {ex.Message}").Append($"(Stack Trace: {ex.StackTrace}").Append(Environment.NewLine);
+                ex = ex.InnerException;
+            }
+            return sb.ToString();
         }
     }
 }

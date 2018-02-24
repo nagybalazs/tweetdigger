@@ -11,9 +11,10 @@ using TweetFlow.EF;
 namespace TweetFlow.EF.Migrations
 {
     [DbContext(typeof(TweetFlowContext))]
-    partial class TweetFlowContextModelSnapshot : ModelSnapshot
+    [Migration("20180218212850_StreamInfo")]
+    partial class StreamInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +25,6 @@ namespace TweetFlow.EF.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("EventType");
 
                     b.Property<string>("ExceptionMessage");
 

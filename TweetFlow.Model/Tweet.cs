@@ -5,7 +5,7 @@ namespace TweetFlow.Model
 {
     public class Tweet
     {
-        public TweetType Type { get; set; }
+        public string Type { get; set; }
         public string StrId { get; set; }
         public string FullText { get; set; }
         /// <summary>
@@ -39,5 +39,6 @@ namespace TweetFlow.Model
 
         public User User { get; set; }
         public ICollection<string> Hashtags { get; set; }
+        public bool Celebrity { get; set; }
     }
 }

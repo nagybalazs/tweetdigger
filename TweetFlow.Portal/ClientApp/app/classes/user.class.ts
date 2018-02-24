@@ -11,6 +11,9 @@ export class User {
     screenName: string;
     createdAt: moment.Moment;
     profileImageUrl400x400: string;
+    get profileUrl(): string {
+        return `https://twitter.com/${this.screenName}`;
+    }
 
     static create(user: User): User {
         let created = new User();

@@ -1,9 +1,12 @@
 ﻿import * as moment from 'moment';
 import { User } from './classes';
+import { TweetType } from './enum/tweettype.enum';
+import * as linkify from 'linkify-it';
 
 export class Tweet {
     strId: string;
     fullText: string;
+    linkedFullText: string;
     createdAt: moment.Moment;
     quoteCount: number;
     replyCount: number;
@@ -12,14 +15,30 @@ export class Tweet {
     favorited: boolean;
     isRetweet: boolean;
     user: User;
+    type: TweetType;
+    celebrity: boolean;
 
     static create(tweet: Tweet): Tweet {
         let created = new Tweet();
 
+        let ly = new linkify();
+        let val = ly.match(tweet.fullText);
+
+        let linkified = tweet.fullText;
+        if (val) {
+            val.forEach(va => {
+                linkified = linkified.replace(va.url, `<a href="${va.url}" target="_blank">${va.url}</a>`);
+            });
+            created.linkedFullText = linkified;
+        }
+        else {
+            created.linkedFullText = tweet.fullText;
+        }
+
         created.strId = tweet.strId;
         created.fullText = tweet.fullText;
         created.createdAt = moment.utc(tweet.createdAt);
-
+        created.celebrity = tweet.celebrity;
         created.quoteCount = +tweet.quoteCount;
         if (isNaN(created.quoteCount)) {
             created.quoteCount = 0;
@@ -39,6 +58,8 @@ export class Tweet {
         if (isNaN(created.favoriteCount)) {
             created.favoriteCount = 0;
         }
+
+        created.type = +tweet.type;
 
         created.favorited = tweet.favorited;
         created.isRetweet = tweet.isRetweet;

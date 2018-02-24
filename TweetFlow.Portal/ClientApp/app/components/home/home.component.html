@@ -20,6 +20,6 @@
 
 <div class="feedholder">
     <div *ngFor="let channel of channels" class="feed">
-        <channel [endpoint]="channel.endpoint"></channel>
+        <channel [initialTweets]="getInitialTweet(channel.endpoint)" [endpoint]="channel.endpoint"></channel>
     </div>
 </div>

@@ -1,22 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TweetFlow.EF;
 using TweetFlow.MemoryStore;
-using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
-using TweetFlow.Portal.Controllers;
 using TweetFlow.Providers;
-using TweetFlow.Services;
 using TweetFlow.Stream;
 using TweetFlow.StreamService;
 
@@ -42,16 +33,29 @@ namespace TweetFlow.Portal
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
 
             services
+                .AddOptions()
+                .AddAuthentication(auth =>
+                {
+                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddOpenIdConnect(opts =>
+                {
+                    Configuration.GetSection("OpenIdConnect").Bind(opts);
+                });
+
+            services
                 .AddSignalR();
 
             services
-                .AddOptions()
                 .AddTransient<ICredentials>(p => credentials)
-                .AddTransient<IOrderedQueue<int, Tweet, ScoredItem>, OrderedQueue>()
-                .AddTransient<IScoredCalculator<int, Tweet>, TweetScoreCalculator>()
-                .AddTransient<StreamFactory>()
-                .AddTransient<Subscriber>()
+                .AddTransient<OrderedQueue>()
+                .AddTransient<TweetScoreCalculator>()
+                .AddSingleton<StreamFactory>()
                 .AddTransient<SampleStream>()
+                .AddTransient<TWStreamInfoProvider>()
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TWUserProvider>();
 
@@ -62,9 +66,9 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.ApplicationServices
-                .GetService<Subscriber>()
-                .Bootstrap();
+            //app.ApplicationServices
+            //    .GetService<Subscriber>()
+            //    .Bootstrap();
 
             if (env.IsDevelopment())
             {
@@ -76,7 +80,7 @@ namespace TweetFlow.Portal
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseSignalR(routes =>
@@ -85,11 +89,10 @@ namespace TweetFlow.Portal
                 routes.MapHub<EthereumHub>("ethereum");
                 routes.MapHub<LiteCoinHub>("litecoin");
                 routes.MapHub<RippleHub>("ripple");
-            });
-
-            app.UseStaticFiles();
-
-            app.UseMvc(routes =>
+            })
+            .UseAuthentication()
+            .UseStaticFiles()
+            .UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",

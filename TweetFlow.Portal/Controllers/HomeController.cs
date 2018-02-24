@@ -1,21 +1,16 @@
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TweetFlow.EF;
+using Microsoft.AspNetCore.SignalR;
+using TweetFlow.Model;
+using TweetFlow.Model.Hubs;
 using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {
     public class HomeController : Controller
     {
-        private StreamFactory streamFactory;
-
-        public HomeController(StreamFactory streamFactory)
-        {
-            this.streamFactory = streamFactory;
-        }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

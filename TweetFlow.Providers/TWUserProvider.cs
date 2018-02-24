@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq;
+﻿using System.Linq;
 using TweetFlow.DatabaseModel;
 using TweetFlow.EF;
 
@@ -7,8 +6,7 @@ namespace TweetFlow.Providers
 {
     public class TWUserProvider
     {
-        public TWUserProvider() { }
-
+        // TODO: context lifecycle kezelése normálisan... ez így pure rák
         public TWUser Add(TWUser user)
         {
             using (var context = new TweetFlowContext())
@@ -27,8 +25,7 @@ namespace TweetFlow.Providers
             }
         }
 
-        // TODO: repo, provider, service, UW pattern....
-        public (int HashtagBannPenalty, int WordBannPenalty) IncreaseWordAndHashtagBannCountAndPenaltyCount(long twitterId, int increaseWordBannCountWith = 1, int increaseHashtagBannCountWith = 1)
+        public (int HashtagBannPenalty, int WordBannPenalty) IncreaseWordAndHashtagBannCountAndPenaltyCount(long twitterId, int increaseWordBannCountWith, int increaseHashtagBannCountWith)
         {
             using (var context = new TweetFlowContext())
             {
@@ -43,8 +40,8 @@ namespace TweetFlow.Providers
                     };
                     context.Add(twUserInContext);
                 }
-                var hashtagPenalty = twUserInContext.HashtagBannCount;
-                var wordPenalty = twUserInContext.WordBannCount;
+                var hashtagPenalty = twUserInContext.HashtagBannCount + increaseHashtagBannCountWith;
+                var wordPenalty = twUserInContext.WordBannCount + increaseWordBannCountWith;
 
                 twUserInContext.HashtagBannCount += increaseHashtagBannCountWith;
                 twUserInContext.WordBannCount += increaseWordBannCountWith;

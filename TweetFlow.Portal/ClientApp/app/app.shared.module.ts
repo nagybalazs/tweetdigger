@@ -9,7 +9,12 @@ import { ChannelComponent } from './components/channel/channel.component';
 import { TweetComponent } from './components/tweet/tweet.component';
 import { HomeComponent } from './components/home/home.component';
 
+import { ChannelService } from './services/services';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
+    providers: [
+        ChannelService    ],
     declarations: [
         AppComponent,
         HomeComponent,
@@ -20,6 +25,7 @@ import { HomeComponent } from './components/home/home.component';
         CommonModule,
         HttpModule,
         FormsModule,
+        HttpClientModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
