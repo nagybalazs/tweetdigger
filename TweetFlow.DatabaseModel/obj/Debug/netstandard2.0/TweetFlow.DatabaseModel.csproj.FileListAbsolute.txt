@@ -1,8 +1,0 @@
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/bin/Debug/netstandard2.0/TweetFlow.DatabaseModel.deps.json
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/bin/Debug/netstandard2.0/TweetFlow.DatabaseModel.dll
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/bin/Debug/netstandard2.0/TweetFlow.DatabaseModel.pdb
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/obj/Debug/netstandard2.0/TweetFlow.DatabaseModel.csproj.CoreCompileInputs.cache
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/obj/Debug/netstandard2.0/TweetFlow.DatabaseModel.AssemblyInfoInputs.cache
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/obj/Debug/netstandard2.0/TweetFlow.DatabaseModel.AssemblyInfo.cs
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/obj/Debug/netstandard2.0/TweetFlow.DatabaseModel.dll
-/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.DatabaseModel/obj/Debug/netstandard2.0/TweetFlow.DatabaseModel.pdb
