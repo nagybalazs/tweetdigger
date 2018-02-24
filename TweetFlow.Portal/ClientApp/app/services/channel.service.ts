@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Channel } from '../classes/classes';
 import { Tweet } from '../classes/tweet.class';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
@@ -18,8 +18,9 @@ export class ChannelService {
         ];
     }
 
-    public getCachedTweets(): Observable<Tweet[]> {
-        return this.http.get<Tweet[]>('/api/tweet/cachedtweets');
+    public getCachedTweets(channel: string): Observable<Tweet[]> {
+        let params = new HttpParams().set('channel', channel);
+        return this.http.get<Tweet[]>('/api/tweet/cachedtweets', { params: params });
     }
 
 }

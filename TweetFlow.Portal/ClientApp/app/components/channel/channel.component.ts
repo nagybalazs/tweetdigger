@@ -1,30 +1,36 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HubConnection } from '@aspnet/signalr-client';
 import { Tweet } from '../../classes/classes';
+import { ChannelService } from '../../services/services';
 
 @Component({
     selector: 'channel',
     templateUrl: './channel.component.html'
 })
-export class ChannelComponent {
+export class ChannelComponent implements OnInit {
 
     private initialized: boolean = false;
 
     @Input()
     endpoint: string;
 
-    @Input()
-    set initialTweets(value: Tweet[]) {
-        this.tweets = value;
-        if (!this.initialized) {
-            this.initialize();
-        }
-    }
-
     public tweets: Tweet[] = [];
     private _hubConnetion: HubConnection;
 
-    constructor() { }
+    constructor(private channelService: ChannelService) { }
+
+    ngOnInit() {
+
+        if (!this.endpoint) {
+            throw Error("endpoint is required");
+        }
+
+        this.channelService.getCachedTweets(this.endpoint)
+            .subscribe(cachedTweets => {
+                this.tweets = cachedTweets.map(tweet => Tweet.create(tweet));
+                this.initialize();
+            });
+    }
 
     initialize() {
         this._hubConnetion = new HubConnection('/' + this.endpoint);
@@ -43,7 +49,6 @@ export class ChannelComponent {
                 console.log('started');
             })
             .catch(err => {
-                debugger;
                 console.log(JSON.stringify(err));
             });
     }

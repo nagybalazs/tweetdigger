@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using TweetFlow.Model;
+using System.Linq;
 using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
@@ -15,9 +14,15 @@ namespace TweetFlow.Portal.Controllers
         }
 
         [Route("cachedtweets")]
-        public IActionResult CachedTweets()
+        public IActionResult CachedTweets([FromQuery] string channel)
         {
-            var result = this.streamFactory.GetStream().Queue.CachedItems;
+            var result =
+                this.streamFactory
+                    .GetStream()
+                    .Queue
+                    .CachedItems
+                    .Where(cachedItem => cachedItem.Type == channel);
+
             return Ok(result);
         }
     }
