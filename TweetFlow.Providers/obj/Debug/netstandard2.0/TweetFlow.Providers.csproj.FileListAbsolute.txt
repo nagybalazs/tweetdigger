@@ -1,0 +1,12 @@
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.Providers.deps.json
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.Providers.dll
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.Providers.pdb
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.DatabaseModel.dll
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.EF.dll
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.DatabaseModel.pdb
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/bin/Debug/netstandard2.0/TweetFlow.EF.pdb
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/obj/Debug/netstandard2.0/TweetFlow.Providers.csproj.CoreCompileInputs.cache
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/obj/Debug/netstandard2.0/TweetFlow.Providers.AssemblyInfoInputs.cache
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/obj/Debug/netstandard2.0/TweetFlow.Providers.AssemblyInfo.cs
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/obj/Debug/netstandard2.0/TweetFlow.Providers.dll
+/Users/mac/Documents/GitHub/tweetdigger/TweetFlow.Providers/obj/Debug/netstandard2.0/TweetFlow.Providers.pdb

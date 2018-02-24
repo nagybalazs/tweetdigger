@@ -271,8 +271,15 @@ h2 {
 @keyframes tweetappear {
     0%   {
         opacity: 0;
+        height: 0;
     }
-    100% {
+    30%   {
+        opacity: 0;
+        height: initial;
         overflow: auto;
     }
+    100% {
+    opacity: 1;
+    height: initial;
+    overflow: auto;}
 }
