@@ -219,7 +219,7 @@ namespace TweetFlow.Stream
             var tweet = new Model.Tweet
             {
                 StrId = iTweet.IdStr,
-                FullText = iTweet.FullText,
+                FullText = iTweet.IsRetweet ? iTweet.RetweetedTweet?.FullText : iTweet.FullText,
                 CreatedAt = iTweet.CreatedAt,
                 FavoriteCount = iTweet.FavoriteCount,
                 Favorited = iTweet.Favorited,
