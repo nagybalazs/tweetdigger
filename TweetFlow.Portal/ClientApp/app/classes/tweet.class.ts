@@ -29,7 +29,7 @@ export class Tweet {
             val.forEach(va => {
                 linkified = linkified.replace(va.url, `<a href="${va.url}" target="_blank">${va.url}</a>`);
             });
-            created.fullText = linkified;
+            created.linkedFullText = linkified;
         }
         else {
             created.linkedFullText = tweet.fullText;

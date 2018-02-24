@@ -198,6 +198,10 @@ h2 {
         margin-bottom: 5px;
     }
 
+    .tweet .tweet_content a {
+        color: #0089ff;
+    }
+
     .tweet .tweet_details {
         display: flex;
         margin-top: 10px;
