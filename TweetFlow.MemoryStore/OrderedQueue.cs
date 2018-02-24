@@ -148,7 +148,10 @@ namespace TweetFlow.MemoryStore
             }
             else
             {
-                this.items.Add(item);
+                if (item.Score > 0)
+                {
+                    this.items.Add(item);
+                }
             }
         }
 

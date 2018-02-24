@@ -112,11 +112,20 @@ namespace TweetFlow.Stream
 
             this.filteredStream.StreamStopped += (sender, args) =>
             {
+                var fullMessage = string.Empty;
+
+                var ex = args.Exception;
+                while(ex != null)
+                {
+                    fullMessage += $"EXMS: {ex.Message} EXST: {ex.StackTrace}";
+                    ex = ex.InnerException;
+                }
+
                 tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
                 {
                     EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStopped,
                     OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = args.Exception?.Message,
+                    ExceptionMessage = fullMessage,
                     Reason = args.DisconnectMessage?.Reason
                 });
             };

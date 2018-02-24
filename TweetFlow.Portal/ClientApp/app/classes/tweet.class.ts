@@ -24,10 +24,12 @@ export class Tweet {
         let ly = new linkify();
         let val = ly.match(tweet.fullText);
 
+        let linkified = tweet.fullText;
         if (val) {
             val.forEach(va => {
-                created.linkedFullText = tweet.fullText.replace(va.url, `<a href="${va.url}" target="_blank">${va.url}</a>`);
+                linkified = linkified.replace(va.url, `<a href="${va.url}" target="_blank">${va.url}</a>`);
             });
+            created.fullText = linkified;
         }
         else {
             created.linkedFullText = tweet.fullText;
