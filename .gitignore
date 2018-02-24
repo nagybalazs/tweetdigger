@@ -9,3 +9,12 @@
 /TweetFlow.StreamService/bin
 /TweetFlow.StreamService/obj
 TweetFlow.Portal/appsettings.json
+/TweetFlow.DatabaseModel/obj
+/TweetFlow.DatabaseModel/bin
+/TweetFlow.EF/bin
+/TweetFlow.EF/obj
+/TweetFlow.Providers/bin
+/TweetFlow.Providers/obj
+/TweetFlow.Services/bin
+/TweetFlow.Services/obj
+/.vs
