@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TweetFlow.MemoryStore;
 using TweetFlow.Providers;
@@ -107,11 +108,28 @@ namespace TweetFlow.Stream
         {
             this.filteredStream.MatchingTweetReceived += (sender, args) =>
             {
-                this.FilterAndAddTweetToQueue(args.Tweet);
+                try
+                {
+                    this.FilterAndAddTweetToQueue(args.Tweet);
+                }
+                catch(Exception ex)
+                {
+                    var extText = this.ExtractExceptionFullMessge(ex);
+                    tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                    {
+                        EventTypeEnum = DatabaseModel.StreamInfoEventType.HandledException,
+                        OccuredAt = DateTime.UtcNow,
+                        ExceptionMessage = extText,
+                        Reason = null
+                    });
+                }
             };
 
             this.filteredStream.StreamStopped += (sender, args) =>
             {
+
+                this.Queue.Rekt();
+
                 var fullMessage = string.Empty;
 
                 var ex = args.Exception;
@@ -227,6 +245,17 @@ namespace TweetFlow.Stream
                 }
             };
             return tweet;
+        }
+
+        private string ExtractExceptionFullMessge(Exception ex)
+        {
+            var sb = new StringBuilder();
+            while(ex != null)
+            {
+                sb.Append($"Exception Message: {ex.Message}").Append($"(Stack Trace: {ex.StackTrace}").Append(Environment.NewLine);
+                ex = ex.InnerException;
+            }
+            return sb.ToString();
         }
     }
 }

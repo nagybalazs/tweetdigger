@@ -10,6 +10,12 @@ namespace TweetFlow.MemoryStore
 {
     public class OrderedQueue
     {
+        public EventHandler GotRekt;
+        public void Rekt()
+        {
+            this.GotRekt?.Invoke(null, null);
+        }
+
         private Dictionary<string, Stopwatch> stopwatchContainer;
         private const int defaultReadyWhenCountReached = 50;
 

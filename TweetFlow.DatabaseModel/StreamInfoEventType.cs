@@ -6,6 +6,7 @@
         StreamStopped,
         StreamDisconnected,
         LimitReached,
-        FallingBehind
+        FallingBehind,
+        HandledException
     }
 }

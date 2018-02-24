@@ -48,6 +48,11 @@ namespace TweetFlow.Portal.Controllers
                 {
                     this.SeparateTweet(b);
                 };
+
+                stream.Queue.GotRekt += (a, b) =>
+                {
+                    this.StartStream();
+                };
                 stream.StartAsync();
             }
             return RedirectToAction("Index");
