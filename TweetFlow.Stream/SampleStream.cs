@@ -200,9 +200,7 @@ namespace TweetFlow.Stream
         { 
             var scoredItem = new ScoredItem(this.CreateTweet(tweet));
             scoredItem.SetCustomScoreCalculator(this.tweetScoreCalculator);
-            scoredItem.CalculateScore();
             var supported = new List<string> { "bitcoin", "ethereum", "ripple", "litecoin" };
-
             var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text.Replace("#", string.Empty).ToLower());
             foreach (var hashtag in hashtags)
             {
@@ -210,6 +208,7 @@ namespace TweetFlow.Stream
                 if(match != null)
                 {
                     scoredItem.Content.Type = match;
+                    scoredItem.CalculateScore();
                     this.Queue.SetQueueType(scoredItem.Content.Type).Add(scoredItem);
                 }
             }

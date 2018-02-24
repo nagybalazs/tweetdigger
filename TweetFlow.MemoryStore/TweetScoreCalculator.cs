@@ -58,10 +58,12 @@ namespace TweetFlow.MemoryStore
             else if (hashtagCount > 5 && hashtagCount <= 9)
             {
                 increaseHashtagBannCountWith = 3;
+                score = 0;
             }
             else if (hashtagCount > 9)
             {
                 increaseHashtagBannCountWith = 5;
+                score = 0;
             }
 
             var trimmed = tweet.FullText.Replace(" ", string.Empty).ToLower();
