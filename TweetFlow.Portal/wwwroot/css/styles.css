@@ -151,6 +151,7 @@ h2 {
     }
     .title .name a {
         text-decoration: none;
+        max-width: 150px;
     }
     .title:first-child .name {
         background-color: #68B1CD;
@@ -176,7 +177,6 @@ h2 {
     padding: 13px;
     background-color: white;
     border-bottom: 1px solid #D8E2E8;
-    max-width: 150px;
 }
 
     .tweet .tweeet_title {
