@@ -1,25 +1,30 @@
 ﻿<div class="header">
-    <img class="logo" src="../../assets/logo.png" />
+    <img class="logo" src="../../assets/twtflow_logo.png" />
+    <button class="tradenow" onclick="location.href='https://cex.io/r/0/up118886422/0/'">Trade now</button>
 </div>
 
 <div class="titleholder">
     <div *ngFor="let channel of channels" class="title">
         <p class="name">{{channel.name}}</p>
-        <div class="metrics">
-            <div class="new_tweets up">
-                <h2>1.43%</h2>
-                <p>Tw.24H</p>
-            </div>
-            <div class="change down">
-                <h2>24.33%</h2>
-                <p>Chg.24H</p>
-            </div>
-        </div>
+    </div>
+    <div class="title signuptitle">
+        
     </div>
 </div>
 
 <div class="feedholder">
     <div *ngFor="let channel of channels" class="feed">
         <channel [endpoint]="channel.endpoint"></channel>
+    </div>
+    <div class="signup">
+        <img src="../../assets/logo_w.png" />
+        <p>Tweetflow is currenty in public beta. It will go live soon with many more crypto-tweet channels and tweet analytics.</p> 
+            <br>
+            <br>
+            <span style="font-weight: bold; color: #311152; font-size: 13px;"> Sign up for free, to get early access.</span>
+            <div class="emailform">
+                <input type="text" placeholder="Email address" >
+                <button>Sign up</button>
+            </div>
     </div>
 </div>
