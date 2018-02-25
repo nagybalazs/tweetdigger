@@ -12,7 +12,7 @@ namespace TweetFlow.MemoryStore
     {
         private Dictionary<string, Stopwatch> stopwatchContainer;
         private Dictionary<string, DateTime> retweets;
-        private const int defaultReadyWhenCountReached = 30;
+        private const int defaultReadyWhenCountReached = 3;
 
         private string queueType { get; set; }
 
