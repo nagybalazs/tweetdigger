@@ -34,7 +34,7 @@ namespace TweetFlow.StreamService
             {
                 stream.Rekt += (a, b) =>
                 {
-                // újraindítás, de hogy? :(
+                    // újraindítás, de hogy? :(
                 };
                 stream.StartAsync();
             }
