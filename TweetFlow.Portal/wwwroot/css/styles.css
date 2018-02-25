@@ -47,7 +47,7 @@ table {
 
 html {
     font-family: 'Roboto', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 h2 {
@@ -58,7 +58,7 @@ h2 {
     display: flex;
     align-items: center;
     background-color: white;
-    height: 40px;
+    height: 60px;
     justify-content: space-between;
     right: 0;
     left: 0;
@@ -90,10 +90,9 @@ h2 {
 
 .feedholder {
     position: absolute;
-    top: 85px;
+    top: 105px;
     bottom: 0;
     display: flex;
-    overflow-x: scroll;
     overflow-y: hidden;
 }
 
@@ -105,7 +104,6 @@ h2 {
     background: red;
     display: inline;
     overflow-y: scroll;
-    overflow-x: hidden;
     background-color: #fbfbfb;
     border: 1px solid #D8E2E8;
     border-left: 0;
@@ -126,7 +124,7 @@ h2 {
 .titleholder {
     display: flex;
     position: absolute;
-    top: 40px;
+    top: 60px;
     z-index: 1000;
 }
 
@@ -301,4 +299,15 @@ h2 {
     opacity: 1;
     height: initial;
     overflow: auto;}
+}
+
+body {
+    overflow-x: scroll;
+}
+
+
+ 
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
 }
