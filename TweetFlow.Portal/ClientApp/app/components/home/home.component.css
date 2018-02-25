@@ -1,1 +1,57 @@
-﻿
+﻿.signup {
+    background-color: #a165e2;
+    box-sizing: border-box;
+    min-width: 450px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 60px 40px;
+}
+
+.signup img {
+    max-height: 22px;
+    margin-bottom: 30px;
+}
+
+.signup p {
+    color: #1e0638;
+    font-size: 14px;
+    text-align: center;
+}
+
+
+.title.signuptitle {
+    border: none;
+    min-width: 450px;
+    background-color: #a165e2;
+    box-sizing: border-box;
+}
+
+.emailform {
+    margin-top: 20px;
+    display: flex;
+}
+
+.emailform input {
+    height: 32px;
+    border: none;
+    font-size: 14px;
+    padding: 6px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.emailform input::-webkit-input-placeholder {
+    color: #beabd2;
+}
+
+.emailform button {
+    height: 32px;
+    box-sizing: border-box;
+    font-size: 13px;
+    background-color: #703ea7;
+    border: none;
+    padding: 0 14px;
+    color: white;
+    font-weight: bold;
+}
