@@ -108,7 +108,7 @@ namespace TweetFlow.MemoryStore
                     this.items.Add(newItem);
                 }
 
-                if (newItem.Content.Celebrity || this.stopwatch.ElapsedMilliseconds >= (10*1000))
+                if (newItem.Content.CelebrityHighlighted || this.stopwatch.ElapsedMilliseconds >= (10*1000))
                 {
                     this.stopwatch.Restart();
                     var maximumScoredItem = this.RemoveMaximumScoredItem();

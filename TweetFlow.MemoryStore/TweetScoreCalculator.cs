@@ -21,8 +21,16 @@ namespace TweetFlow.MemoryStore
         {
             if (this.celebrityIds.Contains(tweet.User.StrId))
             {
-                tweet.Celebrity = true;
+                tweet.CelebrityHighlighted = true;
                 return int.MaxValue;
+            }
+
+            if (tweet.ConvertedToOriginal)
+            {
+                if(tweet.RetweetCount > 2)
+                {
+                    tweet.RetweetHighlighted = true;
+                }
             }
 
             var score =

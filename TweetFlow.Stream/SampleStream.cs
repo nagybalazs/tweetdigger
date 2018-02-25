@@ -252,7 +252,6 @@ namespace TweetFlow.Stream
                 IsRetweet = iTweet.IsRetweet,
                 Hashtags = this.ExtractHashTags(iTweet).ToList(),
                 ConvertedToOriginal = convertedToOriginal,
-                Celebrity = convertedToOriginal,
                 User = new Model.User
                 {
                     StrId = iTweet.CreatedBy.IdStr,

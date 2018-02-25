@@ -16,7 +16,8 @@ export class Tweet {
     isRetweet: boolean;
     user: User;
     type: TweetType;
-    celebrity: boolean;
+    celebrityHighlighted: boolean;
+    retweetHighlighted: boolean;
 
     static create(tweet: Tweet): Tweet {
         let created = new Tweet();
@@ -38,7 +39,8 @@ export class Tweet {
         created.strId = tweet.strId;
         created.fullText = tweet.fullText;
         created.createdAt = moment.utc(tweet.createdAt);
-        created.celebrity = tweet.celebrity;
+        created.celebrityHighlighted = tweet.celebrityHighlighted;
+        created.retweetHighlighted = tweet.retweetHighlighted;
         created.quoteCount = +tweet.quoteCount;
         if (isNaN(created.quoteCount)) {
             created.quoteCount = 0;
