@@ -201,7 +201,19 @@ namespace TweetFlow.Stream
         }
 
         private void FilterAndAddTweetToQueue(ITweet tweet)
-        { 
+        {
+            if (tweet.IsRetweet)
+            {
+                if(tweet.RetweetedTweet == null)
+                {
+                    return;
+                }
+
+                if(tweet.RetweetedTweet.CreatedAt < DateTime.UtcNow.AddDays(-1))
+                {
+                    return;
+                }
+            }
             var scoredItem = new ScoredItem(this.CreateTweet(tweet));
             scoredItem.SetCustomScoreCalculator(this.tweetScoreCalculator);
             var supported = new List<string> { "bitcoin", "ethereum", "ripple", "litecoin" };
@@ -220,10 +232,17 @@ namespace TweetFlow.Stream
 
         private Model.Tweet CreateTweet(ITweet iTweet)
         {
+            var convertedToOriginal = false;
+            if (iTweet.IsRetweet)
+            {
+                iTweet = iTweet.RetweetedTweet;
+                convertedToOriginal = true;
+            }
+
             var tweet = new Model.Tweet
             {
                 StrId = iTweet.IdStr,
-                FullText = iTweet.IsRetweet ? iTweet.RetweetedTweet?.FullText : iTweet.FullText,
+                FullText = iTweet.FullText,
                 CreatedAt = iTweet.CreatedAt,
                 FavoriteCount = iTweet.FavoriteCount,
                 Favorited = iTweet.Favorited,
@@ -231,7 +250,8 @@ namespace TweetFlow.Stream
                 ReplyCount = 0,
                 RetweetCount = iTweet.RetweetCount,
                 IsRetweet = iTweet.IsRetweet,
-                Hashtags = iTweet.IsRetweet ? this.ExtractHashTags(iTweet.RetweetedTweet).ToList() : this.ExtractHashTags(iTweet).ToList(),
+                Hashtags = this.ExtractHashTags(iTweet).ToList(),
+                ConvertedToOriginal = convertedToOriginal,
                 User = new Model.User
                 {
                     StrId = iTweet.CreatedBy.IdStr,

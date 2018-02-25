@@ -11,7 +11,8 @@ namespace TweetFlow.MemoryStore
     public class OrderedQueue
     {
         private Dictionary<string, Stopwatch> stopwatchContainer;
-        private const int defaultReadyWhenCountReached = 3;
+        private Dictionary<string, DateTime> retweets;
+        private const int defaultReadyWhenCountReached = 30;
 
         private string queueType { get; set; }
 
@@ -44,6 +45,7 @@ namespace TweetFlow.MemoryStore
         {
             this.stopwatchContainer = new Dictionary<string, Stopwatch>();
             this.readyWhenCountReached = defaultReadyWhenCountReached;
+            this.retweets = new Dictionary<string, DateTime>();
             this.items = new List<ScoredItem>();
         }
 
@@ -106,7 +108,7 @@ namespace TweetFlow.MemoryStore
                     this.items.Add(newItem);
                 }
 
-                if (newItem.Content.Celebrity || this.stopwatch.ElapsedMilliseconds >= (10*1000))
+                if (newItem.Content.CelebrityHighlighted || this.stopwatch.ElapsedMilliseconds >= (10*1000))
                 {
                     this.stopwatch.Restart();
                     var maximumScoredItem = this.RemoveMaximumScoredItem();
@@ -115,6 +117,10 @@ namespace TweetFlow.MemoryStore
                         return;
                     }
                     this.CacheItem(maximumScoredItem.Content);
+                    if (maximumScoredItem.Content.ConvertedToOriginal)
+                    {
+                        this.retweets.Add(maximumScoredItem.Content.StrId, DateTime.UtcNow);
+                    }
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
 
@@ -139,6 +145,17 @@ namespace TweetFlow.MemoryStore
             var alreadyAdded = this.GetItemByStrIdAndType(item.Content.StrId, item.Content.FullText);
             if (alreadyAdded != null)
             {
+                return;
+            }
+
+            var valueAccessedSuccessfully = this.retweets.TryGetValue(item.Content.StrId, out DateTime addedAt);
+            if (valueAccessedSuccessfully)
+            {
+                var outdatedRetweets = this.retweets.Where(p => p.Value < DateTime.UtcNow.AddMinutes(-10));
+                foreach(var outdatedRetweet in outdatedRetweets)
+                {
+                    this.retweets.Remove(outdatedRetweet.Key);
+                }
                 return;
             }
 

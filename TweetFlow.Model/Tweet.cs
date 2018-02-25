@@ -39,6 +39,8 @@ namespace TweetFlow.Model
 
         public User User { get; set; }
         public ICollection<string> Hashtags { get; set; }
-        public bool Celebrity { get; set; }
+        public bool CelebrityHighlighted { get; set; }
+        public bool RetweetHighlighted { get; set; }
+        public bool ConvertedToOriginal { get; set; }
     }
 }
