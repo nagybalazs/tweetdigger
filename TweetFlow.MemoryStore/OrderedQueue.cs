@@ -10,14 +10,8 @@ namespace TweetFlow.MemoryStore
 {
     public class OrderedQueue
     {
-        public EventHandler GotRekt;
-        public void Rekt()
-        {
-            this.GotRekt?.Invoke(null, null);
-        }
-
         private Dictionary<string, Stopwatch> stopwatchContainer;
-        private const int defaultReadyWhenCountReached = 50;
+        private const int defaultReadyWhenCountReached = 3;
 
         private string queueType { get; set; }
 
@@ -104,7 +98,7 @@ namespace TweetFlow.MemoryStore
         private void OutScoreMinimumScoredItem(ScoredItem newItem)
         {
             var minimumScoredItem = this.GetMinimumScoredItem();
-            if(minimumScoredItem == null || newItem.Score > minimumScoredItem.Score)
+            if(minimumScoredItem == null || newItem.Score >= minimumScoredItem.Score)
             {
                 if (minimumScoredItem != null)
                 {
@@ -112,7 +106,7 @@ namespace TweetFlow.MemoryStore
                     this.items.Add(newItem);
                 }
 
-                if (this.stopwatch.ElapsedMilliseconds >= (10*1000))
+                if (newItem.Content.Celebrity || this.stopwatch.ElapsedMilliseconds >= (10*1000))
                 {
                     this.stopwatch.Restart();
                     var maximumScoredItem = this.RemoveMaximumScoredItem();
@@ -163,7 +157,7 @@ namespace TweetFlow.MemoryStore
 
         private ScoredItem GetItemByStrIdAndType(string strId, string fullText)
         {
-            return this.typedItems.FirstOrDefault(item => item.Content.StrId == strId  && item.Content.FullText == fullText);
+            return this.typedItems.FirstOrDefault(item => item.Content.StrId == strId  || item.Content.FullText == fullText);
         }
 
         public void Remove(ScoredItem item)

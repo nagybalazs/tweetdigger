@@ -1,6 +1,7 @@
 ﻿import * as moment from 'moment';
 
 export class User {
+    strId: string;
     verified: boolean;
     followerCount: number;
     friendsCount: number;
@@ -18,6 +19,7 @@ export class User {
     static create(user: User): User {
         let created = new User();
 
+        created.strId = user.strId;
         created.name = user.name;
         created.screenName = user.screenName;
         created.profileImageUrl400x400 = user.profileImageUrl400x400;

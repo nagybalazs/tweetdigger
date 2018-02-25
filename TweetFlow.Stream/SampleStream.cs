@@ -13,6 +13,7 @@ namespace TweetFlow.Stream
 {
     public class SampleStream
     {
+        public EventHandler<StreamState> Rekt;
         public bool IsStarted
         {
             get
@@ -127,9 +128,6 @@ namespace TweetFlow.Stream
 
             this.filteredStream.StreamStopped += (sender, args) =>
             {
-
-                this.Queue.Rekt();
-
                 var fullMessage = string.Empty;
 
                 var ex = args.Exception;
@@ -146,6 +144,8 @@ namespace TweetFlow.Stream
                     ExceptionMessage = fullMessage,
                     Reason = args.DisconnectMessage?.Reason
                 });
+
+                this.Rekt.Invoke(this, StreamState.Stopped);
             };
 
             this.filteredStream.StreamStarted += (sender, args) =>
@@ -192,7 +192,11 @@ namespace TweetFlow.Stream
                 });
             };
 
-            await this.filteredStream.StartStreamMatchingAllConditionsAsync();
+            if(this.filteredStream.StreamState == Tweetinvi.Models.StreamState.Stop)
+            { 
+                await this.filteredStream.StartStreamMatchingAllConditionsAsync();
+            }
+
             return this;
         }
 
@@ -227,9 +231,10 @@ namespace TweetFlow.Stream
                 ReplyCount = 0,
                 RetweetCount = iTweet.RetweetCount,
                 IsRetweet = iTweet.IsRetweet,
-                Hashtags = iTweet.Hashtags.Select(hashtag => hashtag.Text).ToList(),
+                Hashtags = iTweet.IsRetweet ? this.ExtractHashTags(iTweet.RetweetedTweet).ToList() : this.ExtractHashTags(iTweet).ToList(),
                 User = new Model.User
                 {
+                    StrId = iTweet.CreatedBy.IdStr,
                     CreatedAt = iTweet.CreatedBy.CreatedAt,
                     FavouritesCount = iTweet.CreatedBy.FavouritesCount,
                     FollowersCount = iTweet.CreatedBy.FollowersCount,
@@ -244,6 +249,15 @@ namespace TweetFlow.Stream
                 }
             };
             return tweet;
+        }
+
+        private IEnumerable<string> ExtractHashTags(ITweet tweet)
+        {
+            if(tweet == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+            return tweet.Hashtags.Select(hashtag => hashtag.Text);
         }
 
         private string ExtractExceptionFullMessge(Exception ex)

@@ -41,19 +41,14 @@ namespace TweetFlow.Portal.Controllers
         public IActionResult StartStream()
         {
 
-            var stream = this.streamFactory.GetStream();
-            if (!stream.IsStarted)
+            var stream = this.streamFactory.Start();
+            if (!this.streamFactory.Subsribed)
             {
+                this.streamFactory.Subsribed = true;
                 stream.Queue.ContentAdded += (a, b) =>
                 {
                     this.SeparateTweet(b);
                 };
-
-                stream.Queue.GotRekt += (a, b) =>
-                {
-                    this.StartStream();
-                };
-                stream.StartAsync();
             }
             return RedirectToAction("Index");
         }

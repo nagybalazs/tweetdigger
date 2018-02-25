@@ -36,5 +36,6 @@ namespace TweetFlow.Model
         public string Name { get; set; }
         public string ScreenName { get; set; }
         public long Id { get; set; }
+        public string StrId { get; set; }
     }
 }

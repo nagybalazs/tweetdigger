@@ -13,6 +13,8 @@ namespace TweetFlow.StreamService
         private OrderedQueue orderedQueue;
         private TWStreamInfoProvider tWStreamInfoProvider;
 
+        public bool Subsribed { get; set; }
+
         public StreamFactory(ICredentials credentials, TweetScoreCalculator tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
         {
             this.credentials = credentials;
@@ -23,6 +25,20 @@ namespace TweetFlow.StreamService
         public SampleStream GetStream()
         {
             return this.CreateTrackedStream("#bitcoin", "#ripple", "#litecoin", "#ethereum");
+        }
+
+        public SampleStream Start()
+        {
+            var stream = this.GetStream();
+            if (!stream.IsStarted)
+            {
+                stream.Rekt += (a, b) =>
+                {
+                // újraindítás, de hogy? :(
+                };
+                stream.StartAsync();
+            }
+            return stream;
         }
 
         private SampleStream CreateTrackedStream(params string[] track)
