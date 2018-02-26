@@ -119,7 +119,10 @@ namespace TweetFlow.MemoryStore
                     this.CacheItem(maximumScoredItem.Content);
                     if (maximumScoredItem.Content.ConvertedToOriginal)
                     {
-                        this.retweets.Add(maximumScoredItem.Content.StrId, DateTime.UtcNow);
+                        if (!this.retweets.ContainsKey(maximumScoredItem.Content.StrId))
+                        {
+                            this.retweets.Add(maximumScoredItem.Content.StrId, DateTime.UtcNow);
+                        }
                     }
                     this.ContentAdded?.Invoke(null, maximumScoredItem.Content);
                 }
