@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TweetFlow.MemoryStore;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Providers;
+using TweetFlow.Services;
 using TweetFlow.Stream;
 using TweetFlow.StreamService;
 
@@ -53,11 +54,13 @@ namespace TweetFlow.Portal
                 .AddTransient<ICredentials>(p => credentials)
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TweetScoreCalculator>()
-                .AddSingleton<StreamFactory>()
                 .AddTransient<SampleStream>()
                 .AddTransient<TWStreamInfoProvider>()
                 .AddTransient<OrderedQueue>()
-                .AddTransient<TWUserProvider>();
+                .AddTransient<TWUserProvider>()
+                .AddTransient<TWAccountProvider>()
+                .AddTransient<AccountService>()
+                .AddSingleton<StreamFactory>();
 
             services.AddMvc();
 

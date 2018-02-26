@@ -6,11 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TweetFlow.Portal.Model;
+using TweetFlow.Services;
 
 namespace TweetFlow.Portal.Controllers
 {
     public class AccountController : Controller
     {
+        private AccountService accountService;
+        public AccountController(AccountService accountService)
+        {
+            this.accountService = accountService;
+        }
+
         [HttpGet]
         public IActionResult SignIn()
         {
@@ -35,11 +43,25 @@ namespace TweetFlow.Portal.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                // Redirect to home page if the user is authenticated.
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
             return View();
+        }
+
+        [HttpPost]
+        [Route("/api/account/signup")]
+        public IActionResult SignUp([FromBody] SignupModel model)
+        {
+            if(model == null)
+            {
+                model = new SignupModel();
+            }
+
+            var result = this.accountService.SaveEmail(model.Email);
+            return Ok(new {
+                result = result
+            });
         }
     }
 }

@@ -9,6 +9,7 @@ namespace TweetFlow.EF
     {
         public DbSet<TWUser> TWUsers { get; set; }
         public DbSet<TWStreamInfo> TWStreamInfo { get; set; }
+        public DbSet<TWAccount> TWAccount { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

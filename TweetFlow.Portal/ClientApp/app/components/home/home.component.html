@@ -16,15 +16,5 @@
     <div *ngFor="let channel of channels" class="feed">
         <channel [endpoint]="channel.endpoint"></channel>
     </div>
-    <div class="signup">
-        <img src="../../assets/logo_w.png" />
-        <p>Tweetflow is currenty in public beta. It will go live soon with many more crypto-tweet channels and tweet analytics.</p> 
-            <br>
-            <br>
-            <span style="font-weight: bold; color: #311152; font-size: 13px;"> Sign up for free, to get early access.</span>
-            <div class="emailform">
-                <input type="text" placeholder="Email address" >
-                <button>Sign up</button>
-            </div>
-    </div>
+    <sign-up></sign-up>
 </div>

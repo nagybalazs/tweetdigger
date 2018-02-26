@@ -8,18 +8,22 @@ import { AppComponent } from './components/app/app.component';
 import { ChannelComponent } from './components/channel/channel.component';
 import { TweetComponent } from './components/tweet/tweet.component';
 import { HomeComponent } from './components/home/home.component';
+import { SignupComponent } from './components/signup/signup.component';
 
-import { ChannelService } from './services/services';
+import { ChannelService, AccountService } from './services/services';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     providers: [
-        ChannelService    ],
+        ChannelService,
+        AccountService
+    ],
     declarations: [
         AppComponent,
         HomeComponent,
         ChannelComponent,
-        TweetComponent
+        TweetComponent,
+        SignupComponent
     ],
     imports: [
         CommonModule,
