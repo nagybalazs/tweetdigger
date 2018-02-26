@@ -152,7 +152,7 @@ namespace TweetFlow.MemoryStore
             if (valueAccessedSuccessfully)
             {
                 var outdatedRetweets = this.retweets.Where(p => p.Value < DateTime.UtcNow.AddMinutes(-10));
-                foreach(var outdatedRetweet in outdatedRetweets)
+                foreach(var outdatedRetweet in outdatedRetweets.ToList())
                 {
                     this.retweets.Remove(outdatedRetweet.Key);
                 }
