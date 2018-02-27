@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Diagnostics;
 using TweetFlow.Model;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Portal.Model;
 using TweetFlow.Providers;
+using TweetFlow.Stream;
 using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
@@ -13,6 +16,7 @@ namespace TweetFlow.Portal.Controllers
     public class AdminController : Controller
     {
         private StreamFactory streamFactory;
+        private StreamWatch streamWatch;
         private TWStreamInfoProvider tWStreamInfoProvider;
         private IHubContext<BitCoinHub> bitcoinHub;
         private IHubContext<EthereumHub> ethereumHub;
@@ -21,7 +25,7 @@ namespace TweetFlow.Portal.Controllers
         
         // HubDictionary? => külön osztály, object, tryGetValue-ban cast... Csehszlovák, de rövid, és kintről szép lehet
 
-        public AdminController(StreamFactory streamFactory, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
+        public AdminController(StreamFactory streamFactory, StreamWatch streamWatch, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
         { 
             this.streamFactory = streamFactory;
             this.bitcoinHub = bitcoinHub;
@@ -29,6 +33,7 @@ namespace TweetFlow.Portal.Controllers
             this.rippleHub = rippleHub;
             this.liteCoinHub = liteCoinHub;
             this.tWStreamInfoProvider = tWStreamInfoProvider;
+            this.streamWatch = streamWatch;
         }
         public IActionResult Index()
         {
@@ -48,6 +53,28 @@ namespace TweetFlow.Portal.Controllers
                 stream.Queue.ContentAdded += (a, b) =>
                 {
                     this.SeparateTweet(b);
+                };
+                stream.Rekt += (a, b) =>
+                {
+                    if (!this.streamWatch.RestartInProgress)
+                    {
+                        this.streamWatch.Restart();
+                        if (!this.streamWatch.Subscribed)
+                        {
+                            this.streamWatch.RestartNow += (c, d) =>
+                            {
+                                this.streamWatch.Subscribed = true;
+                                if (stream.CurrentState != StreamState.Stopped)
+                                {
+                                    this.streamWatch.Kill();
+                                }
+                                else
+                                {
+                                    this.StartStream();
+                                }
+                            };
+                        }
+                    }
                 };
             }
             return RedirectToAction("Index");

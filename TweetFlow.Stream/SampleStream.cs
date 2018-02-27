@@ -113,7 +113,7 @@ namespace TweetFlow.Stream
                 {
                     this.FilterAndAddTweetToQueue(args.Tweet);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     var extText = this.ExtractExceptionFullMessge(ex);
                     tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo

@@ -32,10 +32,6 @@ namespace TweetFlow.StreamService
             var stream = this.GetStream();
             if (!stream.IsStarted)
             {
-                stream.Rekt += (a, b) =>
-                {
-                    // újraindítás, de hogy? :(
-                };
                 stream.StartAsync();
             }
             return stream;

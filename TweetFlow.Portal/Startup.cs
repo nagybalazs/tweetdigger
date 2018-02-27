@@ -60,7 +60,8 @@ namespace TweetFlow.Portal
                 .AddTransient<TWUserProvider>()
                 .AddTransient<TWAccountProvider>()
                 .AddTransient<AccountService>()
-                .AddSingleton<StreamFactory>();
+                .AddSingleton<StreamFactory>()
+                .AddSingleton<StreamWatch>();
 
             services.AddMvc();
 
