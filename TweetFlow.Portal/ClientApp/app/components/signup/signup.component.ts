@@ -17,8 +17,15 @@ export class SignupComponent {
     showForm: boolean = true;
     showError: boolean = false;
     showTaken: boolean = false;
+    showSuccess: boolean = false;
+    showEmpty: boolean = false;
 
     signup() {
+        this.showEmpty = false;
+        if (!this.email) {
+            this.showEmpty = true;
+            return;
+        }
         this.accountService.signup(this.email)
             .subscribe(result => {
                 switch (result.result) {
@@ -32,6 +39,7 @@ export class SignupComponent {
                     };
                     case AddAccountResultType.Success: {
                         this.showForm = false;
+                        this.showSuccess = true;
                         break;
                     };
                     case AddAccountResultType.Unknown: {

@@ -1,29 +1,29 @@
-﻿<div class="signup" *ngIf="showForm">
+﻿<div class="signup">
     <img src="../../assets/logo_w.png" />
     <p>Tweetflow is currenty in public beta. It will go live soon with many more crypto-tweet channels and tweet analytics.</p>
     <br>
     <br>
-    <span style="font-weight: bold; color: #311152; font-size: 13px;"> Sign up for free, to get early access.</span>
-    <div class="emailform">
-        <input id="emailRef" #emailRef="ngModel" [(ngModel)]="email" type="text" placeholder="Email address" required pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" />
-        <button (click)="signup()">Sign up</button>
-    </div>
-    <div *ngIf="emailRef.valid || emailRef.untouched">
-        <span style="font-weight: bold; color: #311152; font-size: 13px;" *ngIf="emailRef.errors && emailRef.errors.required">
-            Email is required
-        </span>
-        <span style="font-weight: bold; color: #311152; font-size: 13px;" *ngIf="emailRef.errors && emailRef.errors.pattern">
-            Email is invalid
-        </span>
-    </div>
-    <div *ngIf="showError">
-        <span style="font-weight: bold; color: #311152; font-size: 13px;">
-            Error
-        </span>
-    </div>
-    <div *ngIf="showTaken">
-        <span style="font-weight: bold; color: #311152; font-size: 13px;">
-            Email already registered
-        </span>
-    </div>
+    <ng-container *ngIf="showForm">
+        <span style="font-weight: bold; color: #311152; font-size: 13px;"> Sign up for free, to get early access.</span>
+        <div class="emailform">
+            <input id="emailRef" #emailRef="ngModel" [(ngModel)]="email" type="text" placeholder="Email address" required pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" />
+            <button (click)="signup()">Sign up</button>
+        </div>
+        <div *ngIf="emailRef && (emailRef.valid || emailRef.untouched)">
+            <span style="font-weight: bold; color: #311152; font-size: 13px;" *ngIf="emailRef.errors && emailRef.errors.pattern">
+                Email is invalid
+            </span>
+        </div>
+        <div *ngIf="showError">
+            <span style="font-weight: bold; color: #311152; font-size: 13px;">
+                Error
+            </span>
+        </div>
+        <div *ngIf="showTaken">
+            <span style="font-weight: bold; color: #311152; font-size: 13px;">
+                Email already registered
+            </span>
+        </div>
+    </ng-container>
+    <span *ngIf="showSuccess" style="font-weight: bold; color: #311152; font-size: 13px;"> Success</span>
 </div>
