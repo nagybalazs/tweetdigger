@@ -2,6 +2,7 @@
 using TweetFlow.Stream;
 using TweetFlow.Model;
 using TweetFlow.Providers;
+using TweetFlow.Services;
 
 namespace TweetFlow.StreamService
 {
@@ -12,14 +13,16 @@ namespace TweetFlow.StreamService
         private SampleStream stream;
         private OrderedQueue orderedQueue;
         private TWStreamInfoProvider tWStreamInfoProvider;
+        private TweetService tweetService;
 
         public bool Subsribed { get; set; }
 
-        public StreamFactory(ICredentials credentials, TweetScoreCalculator tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
+        public StreamFactory(ICredentials credentials, TweetService tweetService, TweetScoreCalculator tweetScoreCalculator, TWStreamInfoProvider tWStreamInfoProvider)
         {
             this.credentials = credentials;
             this.tweetScoreCalculator = tweetScoreCalculator;
             this.tWStreamInfoProvider = tWStreamInfoProvider;
+            this.tweetService = tweetService;
         }
 
         public SampleStream GetStream()
@@ -41,7 +44,7 @@ namespace TweetFlow.StreamService
         {
             if (this.stream == null)
             {
-                this.orderedQueue = new OrderedQueue();
+                this.orderedQueue = new OrderedQueue().SetCache(this.tweetService);
 
                 this.stream =
                     new SampleStream(this.credentials, this.orderedQueue, this.tweetScoreCalculator, this.tWStreamInfoProvider)

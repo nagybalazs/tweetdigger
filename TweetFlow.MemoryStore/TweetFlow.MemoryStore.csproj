@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TweetFlow.Model\TweetFlow.Model.csproj" />
     <ProjectReference Include="..\TweetFlow.Providers\TweetFlow.Providers.csproj" />
+    <ProjectReference Include="..\TweetFlow.Services\TweetFlow.Services.csproj" />
   </ItemGroup>
 
 </Project>

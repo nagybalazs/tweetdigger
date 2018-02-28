@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TweetFlow.MemoryStore\TweetFlow.MemoryStore.csproj" />
+    <ProjectReference Include="..\TweetFlow.Model\TweetFlow.Model.csproj" />
     <ProjectReference Include="..\TweetFlow.Providers\TweetFlow.Providers.csproj" />
   </ItemGroup>
 

@@ -11,9 +11,10 @@ using TweetFlow.EF;
 namespace TweetFlow.EF.Migrations
 {
     [DbContext(typeof(TweetFlowContext))]
-    partial class TweetFlowContextModelSnapshot : ModelSnapshot
+    [Migration("20180227194913_Tweets")]
+    partial class Tweets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +62,7 @@ namespace TweetFlow.EF.Migrations
                     b.Property<bool>("ConvertedToOriginal");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnName("datetime2");
 
                     b.Property<int>("FavoriteCount");
 
@@ -84,7 +85,7 @@ namespace TweetFlow.EF.Migrations
                     b.Property<string>("Type");
 
                     b.Property<DateTime>("UserCreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnName("datetime2");
 
                     b.Property<int>("UserFavouritesCount");
 

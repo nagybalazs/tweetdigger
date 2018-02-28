@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Configuration;
 using TweetFlow.DatabaseModel;
 
 namespace TweetFlow.EF
@@ -10,10 +9,18 @@ namespace TweetFlow.EF
         public DbSet<TWUser> TWUsers { get; set; }
         public DbSet<TWStreamInfo> TWStreamInfo { get; set; }
         public DbSet<TWAccount> TWAccount { get; set; }
+        public DbSet<TWTweet> TWTWeet { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            this.MapTWStreamInfo(modelBuilder.Entity<TWStreamInfo>());
+            this.MapTWStreamInfo(modelBuilder.Entity<TWStreamInfo>()).MapTWTweet(modelBuilder.Entity<TWTweet>());
+        }
+
+        private TweetFlowContext MapTWTweet(EntityTypeBuilder<TWTweet> entityTypeBuilder)
+        {
+            entityTypeBuilder.Property(tweet => tweet.CreatedAt).HasColumnType("datetime2");    
+            entityTypeBuilder.Property(tweet => tweet.UserCreatedAt).HasColumnType("datetime2");
+            return this;
         }
 
         private TweetFlowContext MapTWStreamInfo(EntityTypeBuilder<TWStreamInfo> entityTypeBuilder)
