@@ -12,7 +12,6 @@ namespace TweetFlow.Stream
         public List<RestartValue> RestartValues { get; set; }
         public Timer timer;
 
-        private EventHandler restartNow;
         public event EventHandler RestartNow;
 
         public bool RestartInProgress;

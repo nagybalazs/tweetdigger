@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using TweetFlow.Model;
@@ -22,11 +23,21 @@ namespace TweetFlow.Portal.Controllers
         private IHubContext<EthereumHub> ethereumHub;
         private IHubContext<RippleHub> rippleHub;
         private IHubContext<LiteCoinHub> liteCoinHub;
-        
+        private ILogger<AdminController> logger;
+
         // HubDictionary? => külön osztály, object, tryGetValue-ban cast... Csehszlovák, de rövid, és kintről szép lehet
 
-        public AdminController(StreamFactory streamFactory, StreamWatch streamWatch, TWStreamInfoProvider tWStreamInfoProvider, IHubContext<BitCoinHub> bitcoinHub, IHubContext<EthereumHub> ethereumHub, IHubContext<RippleHub> rippleHub, IHubContext<LiteCoinHub> liteCoinHub)
-        { 
+        public AdminController(
+            StreamFactory streamFactory, 
+            StreamWatch streamWatch, 
+            TWStreamInfoProvider tWStreamInfoProvider, 
+            IHubContext<BitCoinHub> bitcoinHub, 
+            IHubContext<EthereumHub> ethereumHub, 
+            IHubContext<RippleHub> rippleHub, 
+            IHubContext<LiteCoinHub> liteCoinHub,
+            ILogger<AdminController> logger)
+        {
+            this.logger = logger;
             this.streamFactory = streamFactory;
             this.bitcoinHub = bitcoinHub;
             this.ethereumHub = ethereumHub;
@@ -45,7 +56,6 @@ namespace TweetFlow.Portal.Controllers
 
         public IActionResult StartStream()
         {
-
             var stream = this.streamFactory.Start();
             if (!this.streamFactory.Subsribed)
             {

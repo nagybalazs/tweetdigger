@@ -15,14 +15,7 @@ namespace TweetFlow.Providers
             {
                 context.TWTWeet.RemoveRange(context.TWTWeet);
                 context.TWTWeet.AddRange(tweets);
-                try
-                {
-                    context.SaveChanges();
-                }
-                catch(Exception ex)
-                {
-
-                }
+                context.SaveChanges();
             }
         }
 

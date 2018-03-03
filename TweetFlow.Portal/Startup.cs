@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using TweetFlow.MemoryStore;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Providers;
@@ -23,6 +25,10 @@ namespace TweetFlow.Portal
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(this.Configuration)
+                .CreateLogger();
         }
 
         public IConfiguration Configuration { get; }
@@ -32,6 +38,8 @@ namespace TweetFlow.Portal
         {
             var credentials = new TwitterCredentials();
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
+
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
             services
                 .AddOptions()
@@ -72,9 +80,6 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //app.ApplicationServices
-            //    .GetService<Subscriber>()
-            //    .Bootstrap();
 
             if (env.IsDevelopment())
             {
