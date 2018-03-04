@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using TweetFlow.EF;
 using TweetFlow.MemoryStore;
 using TweetFlow.Model.Hubs;
 using TweetFlow.Providers;
@@ -18,11 +20,12 @@ namespace TweetFlow.Portal
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             this.Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -38,6 +41,10 @@ namespace TweetFlow.Portal
         {
             var credentials = new TwitterCredentials();
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
+
+            var optionsBuilder = 
+                new DbContextOptionsBuilder<TweetFlowContext>()
+                    .UseSqlServer(this.Configuration.GetConnectionString("TweetFlowConnection"));
 
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
@@ -60,6 +67,7 @@ namespace TweetFlow.Portal
 
             services
                 .AddTransient<ICredentials>(p => credentials)
+                .AddTransient(builder => optionsBuilder.Options)
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TweetScoreCalculator>()
                 .AddTransient<SampleStream>()

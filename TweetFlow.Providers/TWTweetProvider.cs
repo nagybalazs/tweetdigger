@@ -7,11 +7,15 @@ using TweetFlow.EF;
 
 namespace TweetFlow.Providers
 {
-    public class TWTweetProvider
+    public class TWTweetProvider : TWBaseProvider
     {
+
+        public TWTweetProvider(DbContextOptions<TweetFlowContext> options)
+            : base(options) { }
+
         public void SaveCachedTweets(IEnumerable<TWTweet> tweets)
         {
-            using(var context = new TweetFlowContext())
+            using(var context = new TweetFlowContext(this.options))
             {
                 context.TWTWeet.RemoveRange(context.TWTWeet);
                 context.TWTWeet.AddRange(tweets);
@@ -21,7 +25,7 @@ namespace TweetFlow.Providers
 
         public IEnumerable<TWTweet> GetCachedTweets()
         {
-            using(var context = new TweetFlowContext())
+            using(var context = new TweetFlowContext(this.options))
             {
                 return context.TWTWeet.AsNoTracking().ToList();
             }

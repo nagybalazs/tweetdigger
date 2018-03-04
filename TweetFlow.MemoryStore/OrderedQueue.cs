@@ -45,27 +45,16 @@ namespace TweetFlow.MemoryStore
 
         public event EventHandler<Tweet> ContentAdded;
 
-        private bool subscribedOnCache;
-
         public OrderedQueue()
         {
             this.timer = new Timer();
             this.timer.Enabled = true;
             this.timer.Interval = (1000 * 60 * 10);
-
-            if (!this.subscribedOnCache)
-            {
-                this.timer.Elapsed += new ElapsedEventHandler(PersistCache);
-            }
-
+            this.timer.Elapsed += new ElapsedEventHandler(PersistCache);
             this.stopwatchContainer = new Dictionary<string, Stopwatch>();
             this.readyWhenCountReached = defaultReadyWhenCountReached;
             this.retweets = new Dictionary<string, DateTime>();
             this.items = new List<ScoredItem>();
-            if(this.tweetService != null)
-            {
-                this.cachedItems = this.tweetService.GetCachedTweets().ToList();
-            }
         }
 
         public OrderedQueue SetCache(TweetService tweetService)
@@ -76,7 +65,6 @@ namespace TweetFlow.MemoryStore
 
         private void PersistCache(object source, ElapsedEventArgs elapsedEventHandler)
         {
-            this.subscribedOnCache = true;
             if(tweetService == null || this.cachedItems.Count < 1)
             {
                 return;
@@ -167,7 +155,7 @@ namespace TweetFlow.MemoryStore
 
         private void CacheItem(Tweet tweet)
         {
-            if(this.cachedItems.Count(p => p.Type == this.queueType) >= 3)
+            if(this.cachedItems.Count(p => p.Type == this.queueType) >= this.readyWhenCountReached)
             {
                 var remove = this.cachedItems.FirstOrDefault(p => p.Type == this.queueType);
                 if(remove != null)
