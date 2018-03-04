@@ -18,7 +18,6 @@ namespace TweetFlow.Portal.Controllers
     {
         private StreamFactory streamFactory;
         private StreamWatch streamWatch;
-        private TWStreamInfoProvider tWStreamInfoProvider;
         private IHubContext<BitCoinHub> bitcoinHub;
         private IHubContext<EthereumHub> ethereumHub;
         private IHubContext<RippleHub> rippleHub;
@@ -29,8 +28,7 @@ namespace TweetFlow.Portal.Controllers
 
         public AdminController(
             StreamFactory streamFactory, 
-            StreamWatch streamWatch, 
-            TWStreamInfoProvider tWStreamInfoProvider, 
+            StreamWatch streamWatch,  
             IHubContext<BitCoinHub> bitcoinHub, 
             IHubContext<EthereumHub> ethereumHub, 
             IHubContext<RippleHub> rippleHub, 
@@ -43,13 +41,11 @@ namespace TweetFlow.Portal.Controllers
             this.ethereumHub = ethereumHub;
             this.rippleHub = rippleHub;
             this.liteCoinHub = liteCoinHub;
-            this.tWStreamInfoProvider = tWStreamInfoProvider;
             this.streamWatch = streamWatch;
         }
         public IActionResult Index()
         {
             var model = new AdminModel();
-            model.StreamInfo = this.tWStreamInfoProvider.GetLast();
             model.State = this.streamFactory.GetStream().CurrentState;
             return View(model);
         }
@@ -60,30 +56,29 @@ namespace TweetFlow.Portal.Controllers
             if (!this.streamFactory.Subsribed)
             {
                 this.streamFactory.Subsribed = true;
+
                 stream.Queue.ContentAdded += (a, b) =>
                 {
                     this.SeparateTweet(b);
                 };
-                stream.Rekt += (a, b) =>
+
+                stream.Stopped += (stopSender, stoppedCorrelation) =>
                 {
-                    if (!this.streamWatch.RestartInProgress)
+                    this.logger.LogError($"Restarting stream invoked.");
+
+                    this.streamWatch.Start();
+
+                    this.logger.LogError($"Restart is now in progress.");
+
+                    if (!this.streamWatch.Subscribed)
                     {
-                        this.streamWatch.Restart();
-                        if (!this.streamWatch.Subscribed)
+                        this.streamWatch.Subscribed = true;
+                        this.streamWatch.RestartNow += (a, b) =>
                         {
-                            this.streamWatch.RestartNow += (c, d) =>
-                            {
-                                this.streamWatch.Subscribed = true;
-                                if (stream.CurrentState != StreamState.Stopped)
-                                {
-                                    this.streamWatch.Kill();
-                                }
-                                else
-                                {
-                                    this.StartStream();
-                                }
-                            };
-                        }
+                            this.streamWatch.Stop();
+                            this.logger.LogError($"Stream is now restarted");
+                            stream.StartAsync();
+                        };
                     }
                 };
             }

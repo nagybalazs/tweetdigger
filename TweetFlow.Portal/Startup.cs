@@ -63,7 +63,6 @@ namespace TweetFlow.Portal
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TweetScoreCalculator>()
                 .AddTransient<SampleStream>()
-                .AddTransient<TWStreamInfoProvider>()
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TWUserProvider>()
                 .AddTransient<TWAccountProvider>()

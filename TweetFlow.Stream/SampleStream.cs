@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,8 @@ namespace TweetFlow.Stream
 {
     public class SampleStream
     {
-        public EventHandler<StreamState> Rekt;
+        public EventHandler<Guid> Stopped;
+        private int exCount = 0;
         public bool IsStarted
         {
             get
@@ -33,21 +35,21 @@ namespace TweetFlow.Stream
 
         public OrderedQueue Queue { get; set; }
         private TweetScoreCalculator tweetScoreCalculator;
-        private TWStreamInfoProvider tWStreamInfoProvider;
+        private ILogger<SampleStream> logger;
 
         public SampleStream(
             ICredentials credentials, 
             OrderedQueue orderedQueue, 
             TweetScoreCalculator tweetScoreCalculator,
-            TWStreamInfoProvider tWStreamInfoProvider)
+            ILogger<SampleStream> logger)
         {
             TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
             TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
             Auth.SetCredentials(new Tweetinvi.Models.TwitterCredentials(credentials.ConsumerKey, credentials.ConsumerSecret, credentials.AccessToken, credentials.AccessTokenSecret));
-            this.tWStreamInfoProvider = tWStreamInfoProvider;
             this.Queue = orderedQueue;
             this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
             this.tweetScoreCalculator = tweetScoreCalculator;
+            this.logger = logger;
         }
 
         public SampleStream AddTracks(params string[] tracks)
@@ -105,95 +107,66 @@ namespace TweetFlow.Stream
             return this;
         }
 
+        private bool subscribedOnAllEvents = false;
+
         public async Task<SampleStream> StartAsync()
         {
-            this.filteredStream.MatchingTweetReceived += (sender, args) =>
+            if (!this.subscribedOnAllEvents)
             {
-                try
+                this.subscribedOnAllEvents = true;
+                this.filteredStream.MatchingTweetReceived += (sender, args) =>
                 {
-                    this.FilterAndAddTweetToQueue(args.Tweet);
-                }
-                catch (Exception ex)
-                {
-                    var extText = this.ExtractExceptionFullMessge(ex);
-                    tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                    try
                     {
-                        EventTypeEnum = DatabaseModel.StreamInfoEventType.HandledException,
-                        OccuredAt = DateTime.UtcNow,
-                        ExceptionMessage = extText,
-                        Reason = null
-                    });
-                }
-            };
+                        this.FilterAndAddTweetToQueue(args.Tweet);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError(ex, $"Error in filtering: {this.filteredStream.StreamState.AsStr()}.");
+                    }
+                };
 
-            this.filteredStream.StreamStopped += (sender, args) =>
-            {
-                var fullMessage = string.Empty;
-
-                var ex = args.Exception;
-                while(ex != null)
+                this.filteredStream.StreamStopped += (sender, args) =>
                 {
-                    fullMessage += $"EXMS: {ex.Message} EXST: {ex.StackTrace}";
-                    ex = ex.InnerException;
-                }
+                    var message = args.DisconnectMessage == null ? "Internal error." : args.DisconnectMessage.Reason;
+                    var code = args.DisconnectMessage == null ? "0" : args.DisconnectMessage.Code.ToString();
 
-                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                    this.logger.LogError(args.Exception,
+                        $"Stream stopped: {this.filteredStream.StreamState.AsStr()}. " +
+                        $"Error message: {message} (Code: {code}).");
+
+                    this.Stopped.Invoke(this, Guid.NewGuid());
+                };
+
+                this.filteredStream.StreamStarted += (sender, args) =>
                 {
-                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStopped,
-                    OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = fullMessage,
-                    Reason = args.DisconnectMessage?.Reason
-                });
+                    this.logger.LogInformation($"Stream started: {this.filteredStream.StreamState.AsStr()}");
+                };
 
-                this.Rekt.Invoke(this, StreamState.Stopped);
-            };
-
-            this.filteredStream.StreamStarted += (sender, args) =>
-            {
-                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                this.filteredStream.DisconnectMessageReceived += (sender, args) =>
                 {
-                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamStarted,
-                    OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = null,
-                    Reason = null
-                });
-            };
+                    this.logger.LogInformation(
+                        $"Disconnect message received: {this.filteredStream.StreamState.AsStr()}. " +
+                        $"Disconnect message: {args.DisconnectMessage.Reason} (Code: {args.DisconnectMessage.Code}).");
+                };
 
-            this.filteredStream.DisconnectMessageReceived += (sender, args) =>
-            {
-                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                this.filteredStream.LimitReached += (sender, args) =>
                 {
-                    EventTypeEnum = DatabaseModel.StreamInfoEventType.StreamDisconnected,
-                    OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = null,
-                    Reason = args.DisconnectMessage?.Reason
-                });
-            };
+                    this.logger.LogInformation(
+                        $"Limit reached message received: {this.filteredStream.StreamState.AsStr()}. " +
+                        $"Number of tweet not received: {args.NumberOfTweetsNotReceived}");
+                };
 
-            this.filteredStream.LimitReached += (sender, args) =>
-            {
-                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
+                this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
                 {
-                    EventTypeEnum = DatabaseModel.StreamInfoEventType.LimitReached,
-                    OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = null,
-                    Reason = $"Number of Tweets not received: {args.NumberOfTweetsNotReceived}"
-                });
-            };
-
-            this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
-            {
-                tWStreamInfoProvider.Add(new DatabaseModel.TWStreamInfo
-                {
-                    EventTypeEnum = DatabaseModel.StreamInfoEventType.FallingBehind,
-                    OccuredAt = DateTime.UtcNow,
-                    ExceptionMessage = null,
-                    Reason = args.WarningMessage?.Message
-                });
-            };
+                    this.logger.LogInformation(
+                        $"Warning failling behind detected message received: {this.filteredStream.StreamState.AsStr()}. " +
+                        $"Warning message: {args.WarningMessage.Message} (Code: {args.WarningMessage.Code}).");
+                };
+            }
 
             if(this.filteredStream.StreamState == Tweetinvi.Models.StreamState.Stop)
-            { 
+            {
                 await this.filteredStream.StartStreamMatchingAllConditionsAsync();
             }
 
@@ -278,17 +251,6 @@ namespace TweetFlow.Stream
                 return Enumerable.Empty<string>();
             }
             return tweet.Hashtags.Select(hashtag => hashtag.Text);
-        }
-
-        private string ExtractExceptionFullMessge(Exception ex)
-        {
-            var sb = new StringBuilder();
-            while(ex != null)
-            {
-                sb.Append($"Exception Message: {ex.Message}").Append($"(Stack Trace: {ex.StackTrace}").Append(Environment.NewLine);
-                ex = ex.InnerException;
-            }
-            return sb.ToString();
         }
     }
 }

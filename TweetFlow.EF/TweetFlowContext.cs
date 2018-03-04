@@ -7,26 +7,18 @@ namespace TweetFlow.EF
     public class TweetFlowContext : DbContext
     {
         public DbSet<TWUser> TWUsers { get; set; }
-        public DbSet<TWStreamInfo> TWStreamInfo { get; set; }
         public DbSet<TWAccount> TWAccount { get; set; }
         public DbSet<TWTweet> TWTWeet { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            this.MapTWStreamInfo(modelBuilder.Entity<TWStreamInfo>()).MapTWTweet(modelBuilder.Entity<TWTweet>());
+            this.MapTWTweet(modelBuilder.Entity<TWTweet>());
         }
 
         private TweetFlowContext MapTWTweet(EntityTypeBuilder<TWTweet> entityTypeBuilder)
         {
             entityTypeBuilder.Property(tweet => tweet.CreatedAt).HasColumnType("datetime2");    
             entityTypeBuilder.Property(tweet => tweet.UserCreatedAt).HasColumnType("datetime2");
-            return this;
-        }
-
-        private TweetFlowContext MapTWStreamInfo(EntityTypeBuilder<TWStreamInfo> entityTypeBuilder)
-        {
-            entityTypeBuilder.Ignore(streamInfo => streamInfo.EventTypeEnum);
-            entityTypeBuilder.Property(streamInfo => streamInfo.OccuredAt).HasColumnType("datetime2");
             return this;
         }
 

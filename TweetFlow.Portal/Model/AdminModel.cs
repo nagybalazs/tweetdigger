@@ -6,6 +6,5 @@ namespace TweetFlow.Portal.Model
     public class AdminModel
     {
         public StreamState State;
-        public TWStreamInfo StreamInfo;
     }
 }
