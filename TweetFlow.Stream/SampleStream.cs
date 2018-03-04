@@ -15,7 +15,6 @@ namespace TweetFlow.Stream
     public class SampleStream
     {
         public EventHandler<Guid> Stopped;
-        private int exCount = 0;
         public bool IsStarted
         {
             get
