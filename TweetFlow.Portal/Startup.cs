@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +23,8 @@ namespace TweetFlow.Portal
 {
     public class Startup
     {
+        private ChannelFactory channelFactory;
+
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             this.Configuration = new ConfigurationBuilder()
@@ -78,7 +83,8 @@ namespace TweetFlow.Portal
                 .AddTransient<TweetService>()
                 .AddTransient<TWTweetProvider>()
                 .AddSingleton<StreamFactory>()
-                .AddSingleton<StreamWatch>();
+                .AddSingleton<StreamWatch>()
+                .AddSingleton<ChannelFactory>();
 
             services.AddMvc();
 
@@ -87,6 +93,7 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            this.channelFactory = app.ApplicationServices.GetService<ChannelFactory>();
 
             if (env.IsDevelopment())
             {
@@ -103,10 +110,7 @@ namespace TweetFlow.Portal
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<BitCoinHub>("bitcoin");
-                routes.MapHub<EthereumHub>("ethereum");
-                routes.MapHub<LiteCoinHub>("litecoin");
-                routes.MapHub<RippleHub>("ripple");
+                this.channelFactory.RegisterHubs(routes);
             })
             .UseAuthentication()
             .UseStaticFiles()

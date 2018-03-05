@@ -18,29 +18,18 @@ namespace TweetFlow.Portal.Controllers
     {
         private StreamFactory streamFactory;
         private StreamWatch streamWatch;
-        private IHubContext<BitCoinHub> bitcoinHub;
-        private IHubContext<EthereumHub> ethereumHub;
-        private IHubContext<RippleHub> rippleHub;
-        private IHubContext<LiteCoinHub> liteCoinHub;
         private ILogger<AdminController> logger;
-
-        // HubDictionary? => külön osztály, object, tryGetValue-ban cast... Csehszlovák, de rövid, és kintről szép lehet
+        private ChannelFactory channelFactory;
 
         public AdminController(
+            ChannelFactory channelFactory,
             StreamFactory streamFactory, 
             StreamWatch streamWatch,  
-            IHubContext<BitCoinHub> bitcoinHub, 
-            IHubContext<EthereumHub> ethereumHub, 
-            IHubContext<RippleHub> rippleHub, 
-            IHubContext<LiteCoinHub> liteCoinHub,
             ILogger<AdminController> logger)
         {
+            this.channelFactory = channelFactory;
             this.logger = logger;
             this.streamFactory = streamFactory;
-            this.bitcoinHub = bitcoinHub;
-            this.ethereumHub = ethereumHub;
-            this.rippleHub = rippleHub;
-            this.liteCoinHub = liteCoinHub;
             this.streamWatch = streamWatch;
         }
         public IActionResult Index()
@@ -57,9 +46,9 @@ namespace TweetFlow.Portal.Controllers
             {
                 this.streamFactory.Subsribed = true;
 
-                stream.Queue.ContentAdded += (a, b) =>
+                stream.Queue.ContentAdded += (sender, tweet) =>
                 {
-                    this.SeparateTweet(b);
+                    this.channelFactory.InvokeSend(tweet);
                 };
 
                 stream.Stopped += (stopSender, stoppedCorrelation) =>
@@ -83,38 +72,6 @@ namespace TweetFlow.Portal.Controllers
                 };
             }
             return RedirectToAction("Index");
-        }
-
-        private void SeparateTweet(Tweet tweet)
-        {
-            switch (tweet.Type)
-            {
-                case "bitcoin":
-                    {
-                        this.InvokeSend(this.bitcoinHub, tweet);
-                        break;
-                    }
-                case "ethereum":
-                    {
-                        this.InvokeSend(this.ethereumHub, tweet);
-                        break;
-                    }
-                case "litecoin":
-                    {
-                        this.InvokeSend(this.liteCoinHub, tweet);
-                        break;
-                    };
-                case "ripple":
-                    {
-                        this.InvokeSend(this.rippleHub, tweet);
-                        break;
-                    }
-            }
-        }
-
-        private void InvokeSend<THub>(IHubContext<THub> hubContext, Tweet tweet) where THub : Hub
-        {
-            hubContext.Clients.All.InvokeAsync("send", tweet);
         }
     }
 }
