@@ -1,10 +1,5 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using TweetFlow.Model;
-using TweetFlow.Model.Hubs;
-using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {

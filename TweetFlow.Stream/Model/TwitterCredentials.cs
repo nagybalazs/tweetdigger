@@ -1,6 +1,6 @@
 ﻿namespace TweetFlow.Stream
 {
-    public class TwitterCredentials : ICredentials
+    public class StreamCredentials
     {
         public string ConsumerKey { get; set; }
         public string ConsumerSecret { get; set; }

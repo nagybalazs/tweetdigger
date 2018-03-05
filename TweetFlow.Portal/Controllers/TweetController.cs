@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using TweetFlow.StreamService;
+using TweetFlow.Stream.Factory;
 
 namespace TweetFlow.Portal.Controllers
 {

@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using TweetFlow.Portal.Model;
+using TweetFlow.Stream.Watch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using TweetFlow.Stream.Factory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics;
-using TweetFlow.Model;
-using TweetFlow.Model.Hubs;
-using TweetFlow.Portal.Model;
-using TweetFlow.Providers;
-using TweetFlow.Stream;
-using TweetFlow.StreamService;
 
 namespace TweetFlow.Portal.Controllers
 {

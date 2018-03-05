@@ -1,20 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TweetFlow.MemoryStore;
-using TweetFlow.Providers;
+﻿using System;
 using Tweetinvi;
+using System.Linq;
 using Tweetinvi.Models;
 using Tweetinvi.Streaming;
+using TweetFlow.MemoryStore;
+using System.Threading.Tasks;
+using TweetFlow.Stream.Factory;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace TweetFlow.Stream
 {
     public class SampleStream
     {
+        private IEnumerable<string> channelNames;
+        private bool subscribedOnAllEvents = false;
+        private IFilteredStream filteredStream;
+        private ILogger<SampleStream> logger;
+        private ChannelFactory channelFactory;
+        private TweetScoreCalculator tweetScoreCalculator;
+        private StreamCredentials streamCredentials;
+
+        public OrderedQueue Queue { get; set; }
         public EventHandler<Guid> Stopped;
+
         public bool IsStarted
         {
             get
@@ -22,6 +31,7 @@ namespace TweetFlow.Stream
                 return this.CurrentState == StreamState.Running;
             }
         }
+
         public StreamState CurrentState
         {
             get
@@ -30,25 +40,87 @@ namespace TweetFlow.Stream
                 return (StreamState)intVal;
             }
         }
-        private IFilteredStream filteredStream;
 
-        public OrderedQueue Queue { get; set; }
-        private TweetScoreCalculator tweetScoreCalculator;
-        private ILogger<SampleStream> logger;
 
         public SampleStream(
-            ICredentials credentials, 
+            ChannelFactory channelFactory,
+            StreamCredentials streamCredentials, 
             OrderedQueue orderedQueue, 
             TweetScoreCalculator tweetScoreCalculator,
             ILogger<SampleStream> logger)
         {
-            TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
-            TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
-            Auth.SetCredentials(new Tweetinvi.Models.TwitterCredentials(credentials.ConsumerKey, credentials.ConsumerSecret, credentials.AccessToken, credentials.AccessTokenSecret));
+            this.channelNames = channelFactory.ChannelNames;
             this.Queue = orderedQueue;
-            this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
+            this.streamCredentials = streamCredentials;
             this.tweetScoreCalculator = tweetScoreCalculator;
             this.logger = logger;
+            this
+                .Configure()
+                .SubscribeOnAllStreamEvents();
+        }
+
+        private SampleStream Configure()
+        {
+            TweetinviConfig.ApplicationSettings.TweetMode = TweetMode.Extended;
+            TweetinviConfig.CurrentThreadSettings.TweetMode = TweetMode.Extended;
+            Auth.SetCredentials(new TwitterCredentials(this.streamCredentials.ConsumerKey, this.streamCredentials.ConsumerSecret, this.streamCredentials.AccessToken, this.streamCredentials.AccessTokenSecret));
+            this.filteredStream = Tweetinvi.Stream.CreateFilteredStream();
+            return this;
+        }
+
+        private SampleStream SubscribeOnAllStreamEvents()
+        {
+            this.filteredStream.MatchingTweetReceived += (sender, args) =>
+            {
+                try
+                {
+                    this.FilterAndAddTweetToQueue(args.Tweet);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, $"Error in filtering: {this.filteredStream.StreamState.AsStr()}.");
+                }
+            };
+
+            this.filteredStream.StreamStopped += (sender, args) =>
+            {
+                var message = args.DisconnectMessage == null ? "Internal error." : args.DisconnectMessage.Reason;
+                var code = args.DisconnectMessage == null ? "0" : args.DisconnectMessage.Code.ToString();
+
+                this.logger.LogError(args.Exception,
+                    $"Stream stopped: {this.filteredStream.StreamState.AsStr()}. " +
+                    $"Error message: {message} (Code: {code}).");
+
+                this.Stopped.Invoke(this, Guid.NewGuid());
+            };
+
+            this.filteredStream.StreamStarted += (sender, args) =>
+            {
+                this.logger.LogInformation($"Stream started: {this.filteredStream.StreamState.AsStr()}");
+            };
+
+            this.filteredStream.DisconnectMessageReceived += (sender, args) =>
+            {
+                this.logger.LogInformation(
+                    $"Disconnect message received: {this.filteredStream.StreamState.AsStr()}. " +
+                    $"Disconnect message: {args.DisconnectMessage.Reason} (Code: {args.DisconnectMessage.Code}).");
+            };
+
+            this.filteredStream.LimitReached += (sender, args) =>
+            {
+                this.logger.LogInformation(
+                    $"Limit reached message received: {this.filteredStream.StreamState.AsStr()}. " +
+                    $"Number of tweet not received: {args.NumberOfTweetsNotReceived}");
+            };
+
+            this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
+            {
+                this.logger.LogInformation(
+                    $"Warning failling behind detected message received: {this.filteredStream.StreamState.AsStr()}. " +
+                    $"Warning message: {args.WarningMessage.Message} (Code: {args.WarningMessage.Code}).");
+            };
+
+            return this;
         }
 
         public SampleStream AddTracks(params string[] tracks)
@@ -66,36 +138,9 @@ namespace TweetFlow.Stream
             return this;
         }
 
-        public SampleStream AddQueryParameter(IEnumerable<QueryParam> queryParams)
-        {
-            foreach (var queryParam in queryParams)
-            {
-                this.AddQueryParameter(queryParam.Name, queryParam.Value);
-            }
-            return this;
-        }
-
         public SampleStream AddQueryParameter(string name, string value)
         {
             this.filteredStream.AddCustomQueryParameter(name, value);
-            return this;
-        }
-
-        public SampleStream AddLanguages(params Language[] languages)
-        {
-            foreach (var language in languages)
-            {
-                this.AddLanguage(language);
-            }
-            return this;
-        }
-
-        public SampleStream AddLanguages(IEnumerable<Language> languages)
-        {
-            foreach (var language in languages)
-            {
-                this.AddLanguage(language);
-            }
             return this;
         }
 
@@ -106,64 +151,8 @@ namespace TweetFlow.Stream
             return this;
         }
 
-        private bool subscribedOnAllEvents = false;
-
         public async Task<SampleStream> StartAsync()
         {
-            if (!this.subscribedOnAllEvents)
-            {
-                this.subscribedOnAllEvents = true;
-                this.filteredStream.MatchingTweetReceived += (sender, args) =>
-                {
-                    try
-                    {
-                        this.FilterAndAddTweetToQueue(args.Tweet);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.LogError(ex, $"Error in filtering: {this.filteredStream.StreamState.AsStr()}.");
-                    }
-                };
-
-                this.filteredStream.StreamStopped += (sender, args) =>
-                {
-                    var message = args.DisconnectMessage == null ? "Internal error." : args.DisconnectMessage.Reason;
-                    var code = args.DisconnectMessage == null ? "0" : args.DisconnectMessage.Code.ToString();
-
-                    this.logger.LogError(args.Exception,
-                        $"Stream stopped: {this.filteredStream.StreamState.AsStr()}. " +
-                        $"Error message: {message} (Code: {code}).");
-
-                    this.Stopped.Invoke(this, Guid.NewGuid());
-                };
-
-                this.filteredStream.StreamStarted += (sender, args) =>
-                {
-                    this.logger.LogInformation($"Stream started: {this.filteredStream.StreamState.AsStr()}");
-                };
-
-                this.filteredStream.DisconnectMessageReceived += (sender, args) =>
-                {
-                    this.logger.LogInformation(
-                        $"Disconnect message received: {this.filteredStream.StreamState.AsStr()}. " +
-                        $"Disconnect message: {args.DisconnectMessage.Reason} (Code: {args.DisconnectMessage.Code}).");
-                };
-
-                this.filteredStream.LimitReached += (sender, args) =>
-                {
-                    this.logger.LogInformation(
-                        $"Limit reached message received: {this.filteredStream.StreamState.AsStr()}. " +
-                        $"Number of tweet not received: {args.NumberOfTweetsNotReceived}");
-                };
-
-                this.filteredStream.WarningFallingBehindDetected += (sender, args) =>
-                {
-                    this.logger.LogInformation(
-                        $"Warning failling behind detected message received: {this.filteredStream.StreamState.AsStr()}. " +
-                        $"Warning message: {args.WarningMessage.Message} (Code: {args.WarningMessage.Code}).");
-                };
-            }
-
             if(this.filteredStream.StreamState == Tweetinvi.Models.StreamState.Stop)
             {
                 await this.filteredStream.StartStreamMatchingAllConditionsAsync();
@@ -174,25 +163,19 @@ namespace TweetFlow.Stream
 
         private void FilterAndAddTweetToQueue(ITweet tweet)
         {
-            if (tweet.IsRetweet)
+            if (tweet.IsInvalidRetweet())
             {
-                if(tweet.RetweetedTweet == null)
-                {
-                    return;
-                }
-
-                if(tweet.RetweetedTweet.CreatedAt < DateTime.UtcNow.AddDays(-1))
-                {
-                    return;
-                }
+                return;
             }
-            var scoredItem = new ScoredItem(this.CreateTweet(tweet));
-            scoredItem.SetCustomScoreCalculator(this.tweetScoreCalculator);
-            var supported = new List<string> { "bitcoin", "ethereum", "ripple", "litecoin" };
-            var hashtags = tweet.Hashtags.Select(hashtag => hashtag.Text.Replace("#", string.Empty).ToLower());
+
+            var scoredItem = tweet
+                .ToScoredItem()
+                .SetCustomScoreCalculator(this.tweetScoreCalculator);
+
+            var hashtags = tweet.ExtractHashTagsAsQueueType();
             foreach (var hashtag in hashtags)
             {
-                var match = supported.FirstOrDefault(p => p == hashtag);
+                var match = this.channelNames.FirstOrDefault(p => p == hashtag);
                 if(match != null)
                 {
                     scoredItem.Content.Type = match;
@@ -200,58 +183,6 @@ namespace TweetFlow.Stream
                     this.Queue.SetQueueType(scoredItem.Content.Type).Add(scoredItem);
                 }
             }
-        }
-
-        private Model.Tweet CreateTweet(ITweet iTweet)
-        {
-            var convertedToOriginal = false;
-            var createdAt = iTweet.CreatedAt;
-            if (iTweet.IsRetweet)
-            {
-                iTweet = iTweet.RetweetedTweet;
-                convertedToOriginal = true;
-            }
-
-            var tweet = new Model.Tweet
-            {
-                StrId = iTweet.IdStr,
-                FullText = iTweet.FullText,
-                CreatedAt = createdAt,
-                FavoriteCount = iTweet.FavoriteCount,
-                Favorited = iTweet.Favorited,
-                QuoteCount = 0,
-                ReplyCount = 0,
-                RetweetCount = iTweet.RetweetCount,
-                IsRetweet = iTweet.IsRetweet,
-                Hashtags = this.ExtractHashTags(iTweet).ToList(),
-                ConvertedToOriginal = convertedToOriginal,
-                UserMentionsCount = iTweet.UserMentions.Count,
-                User = new Model.User
-                {
-                    StrId = iTweet.CreatedBy.IdStr,
-                    CreatedAt = iTweet.CreatedBy.CreatedAt,
-                    FavouritesCount = iTweet.CreatedBy.FavouritesCount,
-                    FollowersCount = iTweet.CreatedBy.FollowersCount,
-                    FriendsCount = iTweet.CreatedBy.FriendsCount,
-                    ListedCount = iTweet.CreatedBy.ListedCount,
-                    StatusesCount = iTweet.CreatedBy.StatusesCount,
-                    Verified = iTweet.CreatedBy.Verified,
-                    ProfileImageUrl400x400 = iTweet.CreatedBy.ProfileImageUrl400x400,
-                    ScreenName = iTweet.CreatedBy.ScreenName,
-                    Name = iTweet.CreatedBy.Name,
-                    Id = iTweet.CreatedBy.Id
-                }
-            };
-            return tweet;
-        }
-
-        private IEnumerable<string> ExtractHashTags(ITweet tweet)
-        {
-            if(tweet == null)
-            {
-                return Enumerable.Empty<string>();
-            }
-            return tweet.Hashtags.Select(hashtag => hashtag.Text);
         }
     }
 }

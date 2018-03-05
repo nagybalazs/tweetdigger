@@ -24,9 +24,10 @@ namespace TweetFlow.MemoryStore
             return this.Score;
         }
 
-        public void SetCustomScoreCalculator(TweetScoreCalculator calculator)
+        public ScoredItem SetCustomScoreCalculator(TweetScoreCalculator calculator)
         {
             this.calculator = calculator;
+            return this;
         }
     }
 }

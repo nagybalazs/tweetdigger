@@ -1,32 +1,35 @@
-﻿using TweetFlow.MemoryStore;
-using TweetFlow.Stream;
+﻿using Microsoft.Extensions.Logging;
+using System.Linq;
+using TweetFlow.MemoryStore;
 using TweetFlow.Services;
-using Microsoft.Extensions.Logging;
 
-namespace TweetFlow.StreamService
+namespace TweetFlow.Stream.Factory
 {
     public class StreamFactory
     {
-        private ICredentials credentials;
+        private StreamCredentials credentials;
         private TweetScoreCalculator tweetScoreCalculator;
         private SampleStream stream;
         private OrderedQueue orderedQueue;
         private TweetService tweetService;
         private ILogger<SampleStream> logger;
+        private ChannelFactory channelFactory;
 
         public bool Subsribed { get; set; }
 
-        public StreamFactory(ICredentials credentials, TweetService tweetService, TweetScoreCalculator tweetScoreCalculator, ILogger<SampleStream> logger)
+        public StreamFactory(StreamCredentials credentials, TweetService tweetService, TweetScoreCalculator tweetScoreCalculator, ILogger<SampleStream> logger, ChannelFactory channelFactory)
         {
             this.credentials = credentials;
             this.tweetScoreCalculator = tweetScoreCalculator;
             this.tweetService = tweetService;
             this.logger = logger;
+            this.channelFactory = channelFactory;
         }
 
         public SampleStream GetStream()
         {
-            return this.CreateTrackedStream("#bitcoin", "#ripple", "#litecoin", "#ethereum");
+            var tracks = this.channelFactory.ChannelNames.Select(channel => $"#{channel}").ToArray();
+            return this.CreateTrackedStream(tracks);
         }
 
         public SampleStream Start()
@@ -46,7 +49,7 @@ namespace TweetFlow.StreamService
                 this.orderedQueue = new OrderedQueue().SetCache(this.tweetService);
 
                 this.stream =
-                    new SampleStream(this.credentials, this.orderedQueue, this.tweetScoreCalculator, logger)
+                    new SampleStream(this.channelFactory, this.credentials, this.orderedQueue, this.tweetScoreCalculator, this.logger)
                         .AddLanguage(Language.English)
                         .AddTracks(track)
                         .AddQueryParameter("result_type", "recent");

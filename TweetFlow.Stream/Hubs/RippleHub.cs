@@ -1,4 +1,4 @@
-﻿namespace TweetFlow.Model.Hubs
+﻿namespace TweetFlow.Stream.Hubs
 {
     public class RippleHub : BaseHub { }
 }

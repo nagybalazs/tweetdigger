@@ -1,23 +1,19 @@
-using System;
-using System.Collections.Generic;
+using Serilog;
 using System.IO;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using TweetFlow.EF;
+using TweetFlow.Stream;
+using TweetFlow.Services;
+using TweetFlow.Providers;
+using TweetFlow.MemoryStore;
+using TweetFlow.Stream.Watch;
+using TweetFlow.Stream.Factory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using TweetFlow.EF;
-using TweetFlow.MemoryStore;
-using TweetFlow.Model.Hubs;
-using TweetFlow.Providers;
-using TweetFlow.Services;
-using TweetFlow.Stream;
-using TweetFlow.StreamService;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TweetFlow.Portal
 {
@@ -44,7 +40,7 @@ namespace TweetFlow.Portal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var credentials = new TwitterCredentials();
+            var credentials = new StreamCredentials();
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
 
             var optionsBuilder =
@@ -71,8 +67,8 @@ namespace TweetFlow.Portal
                 .AddSignalR();
 
             services
-                .AddTransient<ICredentials>(p => credentials)
                 .AddTransient(builder => optionsBuilder.Options)
+                .AddTransient(p => credentials)
                 .AddTransient<OrderedQueue>()
                 .AddTransient<TweetScoreCalculator>()
                 .AddTransient<SampleStream>()

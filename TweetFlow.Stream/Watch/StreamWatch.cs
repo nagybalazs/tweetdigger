@@ -1,33 +1,36 @@
 ﻿using Microsoft.Extensions.Logging;
-using MoreLinq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Timers;
 
-namespace TweetFlow.Stream
+namespace TweetFlow.Stream.Watch
 {
     public class StreamWatch
     {
-        public List<RestartValue> RestartValues { get; set; }
         public Timer timer;
+        public bool RestartInProgress;
         private ILogger<StreamWatch> logger;
         public event EventHandler RestartNow;
-        public bool RestartInProgress;
         public bool Subscribed { get; set; }
+        private int tryRestartIntervalInSeconds = 30;
 
         public StreamWatch(ILogger<StreamWatch> logger)
         {
             this.logger = logger;
             this.timer = new Timer();
-            this.RestartValues = new List<RestartValue>();
             this.timer.Elapsed += new ElapsedEventHandler(InvokeElapsed);
         }
 
         public void Start()
         {
             this.timer.Enabled = true;
-            this.timer.Interval = (30 * 1000);
+            this.timer.Interval = this.tryRestartIntervalInSeconds;
+        }
+
+        public StreamWatch SetTryRestartInterval(int retrySeconds)
+        {
+            this.tryRestartIntervalInSeconds = retrySeconds;
+            return this;
         }
 
         public void Stop()
@@ -40,11 +43,5 @@ namespace TweetFlow.Stream
             this.RestartInProgress = false;
             this.RestartNow?.Invoke(null, null);
         }
-    }
-
-    public class RestartValue
-    {
-        public int Exponential { get; set; }
-        public DateTime OccuredAt { get; set; }
     }
 }

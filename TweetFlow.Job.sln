@@ -7,19 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Stream", "TweetFl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.MemoryStore", "TweetFlow.MemoryStore\TweetFlow.MemoryStore.csproj", "{DCF986AD-FB9B-4761-8D9A-A849FE7F67C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.StreamService", "TweetFlow.StreamService\TweetFlow.StreamService.csproj", "{DEF82038-5380-41D8-BA31-3BA89EF74A47}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Model", "TweetFlow.Model\TweetFlow.Model.csproj", "{79D2DB52-3FC5-4CB9-ACA5-E46871B4156F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Portal", "TweetFlow.Portal\TweetFlow.Portal.csproj", "{E9D834F9-3889-4BC3-888D-220D7EACAF11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.DatabaseModel", "TweetFlow.DatabaseModel\TweetFlow.DatabaseModel.csproj", "{4FB6C608-FD69-407E-85CE-66D1FFD878BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.DatabaseModel", "TweetFlow.DatabaseModel\TweetFlow.DatabaseModel.csproj", "{4FB6C608-FD69-407E-85CE-66D1FFD878BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.EF", "TweetFlow.EF\TweetFlow.EF.csproj", "{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.EF", "TweetFlow.EF\TweetFlow.EF.csproj", "{B12591C4-BE35-4C09-BF5D-40D9EFDE5329}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.Providers", "TweetFlow.Providers\TweetFlow.Providers.csproj", "{39CA9090-0426-4721-8719-70481E22EA00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Providers", "TweetFlow.Providers\TweetFlow.Providers.csproj", "{39CA9090-0426-4721-8719-70481E22EA00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetFlow.Services", "TweetFlow.Services\TweetFlow.Services.csproj", "{F40B6C82-6730-4C2C-8225-32F1750E4F53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetFlow.Services", "TweetFlow.Services\TweetFlow.Services.csproj", "{F40B6C82-6730-4C2C-8225-32F1750E4F53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{DCF986AD-FB9B-4761-8D9A-A849FE7F67C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCF986AD-FB9B-4761-8D9A-A849FE7F67C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCF986AD-FB9B-4761-8D9A-A849FE7F67C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEF82038-5380-41D8-BA31-3BA89EF74A47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEF82038-5380-41D8-BA31-3BA89EF74A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEF82038-5380-41D8-BA31-3BA89EF74A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEF82038-5380-41D8-BA31-3BA89EF74A47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{79D2DB52-3FC5-4CB9-ACA5-E46871B4156F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79D2DB52-3FC5-4CB9-ACA5-E46871B4156F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79D2DB52-3FC5-4CB9-ACA5-E46871B4156F}.Release|Any CPU.ActiveCfg = Release|Any CPU

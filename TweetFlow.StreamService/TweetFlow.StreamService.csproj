@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TweetFlow.Stream\TweetFlow.Stream.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-preview1-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TweetFlow.Model\TweetFlow.Model.csproj" />
   </ItemGroup>
 
 </Project>
