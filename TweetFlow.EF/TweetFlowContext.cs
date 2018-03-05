@@ -9,6 +9,8 @@ namespace TweetFlow.EF
         public TweetFlowContext(DbContextOptions<TweetFlowContext> options)
             : base(options) { }
 
+        public TweetFlowContext() { }
+
         public DbSet<TWUser> TWUsers { get; set; }
         public DbSet<TWAccount> TWAccount { get; set; }
         public DbSet<TWTweet> TWTWeet { get; set; }
@@ -25,10 +27,10 @@ namespace TweetFlow.EF
             return this;
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("Data Source=tcp:tweetflow.database.windows.net,1433;Initial Catalog=TweetFlow;User Id=nagy.balazs@tweetflow.database.windows.net;Password=Password11;");
-        //    //optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TweetFlow;Trusted_Connection=True;MultipleActiveResultSets=true");
-        //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //optionsBuilder.UseSqlServer("Data Source=tcp:tweetflow.database.windows.net,1433;Initial Catalog=TweetFlow;User Id=nagy.balazs@tweetflow.database.windows.net;Password=Password11;");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TweetFlow;Trusted_Connection=True;MultipleActiveResultSets=true");
+        }
     }
 }

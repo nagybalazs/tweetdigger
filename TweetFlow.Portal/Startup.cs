@@ -47,7 +47,7 @@ namespace TweetFlow.Portal
             var credentials = new TwitterCredentials();
             this.Configuration.GetSection("Twitter:Credentials").Bind(credentials);
 
-            var optionsBuilder = 
+            var optionsBuilder =
                 new DbContextOptionsBuilder<TweetFlowContext>()
                     .UseSqlServer(this.Configuration.GetConnectionString("TweetFlowConnection"));
 

@@ -52,6 +52,7 @@ namespace TweetFlow.MemoryStore
 
             var increaseWordBannCountWith = 0;
             var increaseHashtagBannCountWith = 0;
+            var increaseUserMentionCount = 0;
 
             var hashtagCount = tweet.Hashtags.Count;
             if (hashtagCount > 1 && hashtagCount <= 3)
@@ -71,6 +72,27 @@ namespace TweetFlow.MemoryStore
             else if (hashtagCount > 9)
             {
                 increaseHashtagBannCountWith = 5;
+                score = 0;
+            }
+
+            var userMentionCount = tweet.UserMentionsCount;
+            if(userMentionCount > 1 && hashtagCount <= 2)
+            {
+                increaseUserMentionCount = 1;
+            }
+            else if(userMentionCount > 2 && userMentionCount <= 5)
+            {
+                increaseUserMentionCount = 2;
+                score = 0;
+            }
+            else if(userMentionCount > 5 && userMentionCount <= 9)
+            {
+                increaseUserMentionCount = 3;
+                score = 0;
+            }
+            else if(hashtagCount > 9)
+            {
+                increaseUserMentionCount = 5;
                 score = 0;
             }
 
@@ -109,8 +131,8 @@ namespace TweetFlow.MemoryStore
             var actualPenalty = 1;
             if (increaseHashtagBannCountWith > 0 || increaseWordBannCountWith > 0)
             {
-                var penalty = provider.IncreaseWordAndHashtagBannCountAndPenaltyCount(tweet.User.Id, increaseWordBannCountWith, increaseHashtagBannCountWith);
-                actualPenalty = penalty.HashtagBannPenalty + penalty.WordBannPenalty;
+                var penalty = provider.IncreaseWordAndHashtagBannCountAndPenaltyCount(tweet.User.Id, increaseWordBannCountWith, increaseHashtagBannCountWith, increaseUserMentionCount);
+                actualPenalty = penalty.HashtagBannPenalty + penalty.WordBannPenalty + penalty.UserMentionBannPenalty;
             }
 
             if (actualPenalty > 0)

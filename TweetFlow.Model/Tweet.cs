@@ -42,5 +42,6 @@ namespace TweetFlow.Model
         public bool CelebrityHighlighted { get; set; }
         public bool RetweetHighlighted { get; set; }
         public bool ConvertedToOriginal { get; set; }
+        public int UserMentionsCount { get; set; }
     }
 }

@@ -205,6 +205,7 @@ namespace TweetFlow.Stream
         private Model.Tweet CreateTweet(ITweet iTweet)
         {
             var convertedToOriginal = false;
+            var createdAt = iTweet.CreatedAt;
             if (iTweet.IsRetweet)
             {
                 iTweet = iTweet.RetweetedTweet;
@@ -215,7 +216,7 @@ namespace TweetFlow.Stream
             {
                 StrId = iTweet.IdStr,
                 FullText = iTweet.FullText,
-                CreatedAt = iTweet.CreatedAt,
+                CreatedAt = createdAt,
                 FavoriteCount = iTweet.FavoriteCount,
                 Favorited = iTweet.Favorited,
                 QuoteCount = 0,
@@ -224,6 +225,7 @@ namespace TweetFlow.Stream
                 IsRetweet = iTweet.IsRetweet,
                 Hashtags = this.ExtractHashTags(iTweet).ToList(),
                 ConvertedToOriginal = convertedToOriginal,
+                UserMentionsCount = iTweet.UserMentions.Count,
                 User = new Model.User
                 {
                     StrId = iTweet.CreatedBy.IdStr,

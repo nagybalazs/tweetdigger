@@ -30,7 +30,7 @@ namespace TweetFlow.Providers
             }
         }
 
-        public (int HashtagBannPenalty, int WordBannPenalty) IncreaseWordAndHashtagBannCountAndPenaltyCount(long twitterId, int increaseWordBannCountWith, int increaseHashtagBannCountWith)
+        public (int HashtagBannPenalty, int WordBannPenalty, int UserMentionBannPenalty) IncreaseWordAndHashtagBannCountAndPenaltyCount(long twitterId, int increaseWordBannCountWith, int increaseHashtagBannCountWith, int increaseUserMentionCount)
         {
             using (var context = new TweetFlowContext(this.options))
             {
@@ -42,16 +42,20 @@ namespace TweetFlow.Providers
                         TwitterId = twitterId,
                         HashtagBannCount = 0,
                         WordBannCount = 0,
+                        UserMentionBannCount = 0
                     };
                     context.Add(twUserInContext);
                 }
                 var hashtagPenalty = twUserInContext.HashtagBannCount + increaseHashtagBannCountWith;
                 var wordPenalty = twUserInContext.WordBannCount + increaseWordBannCountWith;
+                var userMentionPenalty = twUserInContext.UserMentionBannCount + increaseUserMentionCount;
 
                 twUserInContext.HashtagBannCount += increaseHashtagBannCountWith;
                 twUserInContext.WordBannCount += increaseWordBannCountWith;
+                twUserInContext.UserMentionBannCount += increaseUserMentionCount;
+
                 context.SaveChanges();
-                return (hashtagPenalty, wordPenalty);
+                return (hashtagPenalty, wordPenalty, userMentionPenalty);
             }
         }
     }
