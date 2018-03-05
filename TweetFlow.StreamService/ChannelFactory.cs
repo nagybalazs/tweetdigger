@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TweetFlow.Model;
@@ -13,8 +12,6 @@ namespace TweetFlow.StreamService
         private IHubContext<EthereumHub> ethereumHub;
         private IHubContext<LiteCoinHub> litecoinHub;
         private IHubContext<RippleHub> rippleHub;
-
-        private List<Channel> channels;
 
         public List<Channel> Channels
         {

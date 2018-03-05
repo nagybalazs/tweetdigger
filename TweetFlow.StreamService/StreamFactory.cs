@@ -1,7 +1,5 @@
 ﻿using TweetFlow.MemoryStore;
 using TweetFlow.Stream;
-using TweetFlow.Model;
-using TweetFlow.Providers;
 using TweetFlow.Services;
 using Microsoft.Extensions.Logging;
 
