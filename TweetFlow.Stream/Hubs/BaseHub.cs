@@ -7,7 +7,7 @@ namespace TweetFlow.Stream.Hubs
     { 
         public async Task Send(string data)
         {
-            await Clients.All.SendAsync("send", data);
+            await Clients.All.InvokeAsync("send", data);
         }
     }
 }

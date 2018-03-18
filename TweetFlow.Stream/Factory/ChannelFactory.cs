@@ -69,7 +69,7 @@ namespace TweetFlow.Stream.Factory
                 typeof(HubRouteBuilder)
                     .GetMethod("MapHub", new[] { typeof(string) })
                     .MakeGenericMethod(channel.HubType)
-                    .Invoke(hubRouteBuilder, new[] { $"/{channel.Name}" });
+                    .Invoke(hubRouteBuilder, new[] { $"{channel.Name}" });
             }
         }
 
@@ -80,7 +80,7 @@ namespace TweetFlow.Stream.Factory
             {
                 return;
             }
-            channel.HubContext.Clients.All.SendAsync("send", tweet);
+            channel.HubContext.Clients.All.InvokeAsync("send", tweet);
         }
     }
 }

@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-preview1-final" />
     <PackageReference Include="morelinq" Version="2.10.0" />
   </ItemGroup>
 
