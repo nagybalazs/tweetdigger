@@ -28,7 +28,7 @@ namespace TweetFlow.Stream.Factory
 
         public SampleStream GetStream()
         {
-            var tracks = this.channelFactory.ChannelNames.Select(channel => $"#{channel}").ToArray();
+            var tracks = this.channelFactory.ChannelNames.Select(channel => $"{channel}").ToArray();
             return this.CreateTrackedStream(tracks);
         }
 

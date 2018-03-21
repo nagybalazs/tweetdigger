@@ -35,9 +35,9 @@ namespace TweetFlow.MemoryStore
         {
             get
             {
-                if(this.cachedItems == null)
+                if(this.cachedItems == null || this.cachedItems.Count < 1)
                 {
-                    this.cachedItems = new List<Tweet>();
+                    this.cachedItems = this.tweetService.GetCachedTweets().ToList();
                 }
                 return new ReadOnlyCollection<Tweet>(this.cachedItems);
             }
