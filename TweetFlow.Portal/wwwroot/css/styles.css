@@ -71,6 +71,7 @@ h2 {
     }
 
     .header button {
+        display: none;
         background-color: #700fda;
         height: 100%;
         border-radius: 0;
@@ -126,6 +127,7 @@ h2 {
     position: absolute;
     top: 60px;
     z-index: 1000;
+    width: 100%;
 }
 
 .title {
@@ -302,7 +304,7 @@ h2 {
 }
 
 body {
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 
@@ -310,4 +312,20 @@ body {
 body::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
     border-radius: 10px;
+}   
+.highlighted {
+    position: relative;
+    background-color: #eaeaff;
 }
+
+.highlighted:before {
+    content: "Celebrity";
+    background-color: #dcdcf3;
+    position: absolute;
+    right: 10px;
+    padding: 3px 11px;
+    font-weight: bold;
+    color: #7e7eb1;
+    top: 8px;
+    font-size: 11px;
+    border-radius: 10px;}

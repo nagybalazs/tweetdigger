@@ -55,3 +55,9 @@
         color: white;
         font-weight: bold;
     }
+
+    @media (min-width: 767px) {
+        .feed, .title {
+            width: 25%;
+        }
+    }
