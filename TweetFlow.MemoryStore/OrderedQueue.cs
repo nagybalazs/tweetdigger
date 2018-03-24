@@ -49,7 +49,7 @@ namespace TweetFlow.MemoryStore
         {
             this.timer = new Timer();
             this.timer.Enabled = true;
-            this.timer.Interval = (1000 * 60 * 10);
+            this.timer.Interval = (1000 * 60 * 2);
             this.timer.Elapsed += new ElapsedEventHandler(PersistCache);
             this.stopwatchContainer = new Dictionary<string, Stopwatch>();
             this.readyWhenCountReached = defaultReadyWhenCountReached;

@@ -27,7 +27,9 @@ namespace TweetFlow.Providers
         {
             using(var context = new TweetFlowContext(this.options))
             {
-                return context.TWTWeet.AsNoTracking().ToList();
+                return context.TWTWeet.AsNoTracking()
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToList();
             }
         }
     }
