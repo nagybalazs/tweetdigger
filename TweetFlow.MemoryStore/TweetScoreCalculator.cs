@@ -25,13 +25,13 @@ namespace TweetFlow.MemoryStore
                 return int.MaxValue;
             }
 
-            if (tweet.ConvertedToOriginal)
-            {
-                if(tweet.RetweetCount > 2)
-                {
-                    tweet.RetweetHighlighted = true;
-                }
-            }
+            //if (tweet.ConvertedToOriginal)
+            //{
+            //    if(tweet.RetweetCount > 20)
+            //    {
+            //        tweet.RetweetHighlighted = true;
+            //    }
+            //}
 
             var score =
                 (tweet.RetweetCount * 5) +
