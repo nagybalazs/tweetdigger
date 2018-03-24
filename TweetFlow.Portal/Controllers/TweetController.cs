@@ -21,7 +21,8 @@ namespace TweetFlow.Portal.Controllers
                     .GetStream()
                     .Queue
                     .CachedItems
-                    .Where(cachedItem => cachedItem.Type == channel);
+                    .Where(cachedItem => cachedItem.Type == channel)
+                    .OrderByDescending(d => d.CreatedAt);
 
             return Ok(result);
         }

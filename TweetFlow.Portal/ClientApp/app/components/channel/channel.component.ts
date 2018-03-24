@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { HubConnection } from '@aspnet/signalr-client';
+import { Component, OnInit, Input, NgZone } from '@angular/core';
+import { HubConnection, TransportType } from '@aspnet/signalr-client';
 import { Tweet } from '../../classes/classes';
 import { ChannelService } from '../../services/services';
 
@@ -17,7 +17,7 @@ export class ChannelComponent implements OnInit {
     public tweets: Tweet[] = [];
     private _hubConnetion: HubConnection;
 
-    constructor(private channelService: ChannelService) { }
+    constructor(private channelService: ChannelService, private zone: NgZone) { }
 
     ngOnInit() {
 
@@ -33,15 +33,17 @@ export class ChannelComponent implements OnInit {
     }
 
     initialize() {
-        this._hubConnetion = new HubConnection('/' + this.endpoint);
-
+        this._hubConnetion = new HubConnection('/' + this.endpoint, { transport: TransportType.ServerSentEvents } );
+        
         this._hubConnetion.on('Send', (data: any) => {
-            if (this.tweets.length >= 100) {
-                this.tweets.splice(-1, 1);
-            }
-            let tweet = Tweet.create(data);
-            this.tweets.unshift(tweet);
-            console.log(JSON.stringify(tweet));
+            this.zone.run(() => {
+                if (this.tweets.length >= 100) {
+                    this.tweets.splice(-1, 1);
+                }
+                let tweet = Tweet.create(data);
+                this.tweets.unshift(tweet);
+                console.log(JSON.stringify(tweet));
+            });
         });
 
         this._hubConnetion.start()

@@ -55,6 +55,10 @@ namespace TweetFlow.MemoryStore
             this.readyWhenCountReached = defaultReadyWhenCountReached;
             this.retweets = new Dictionary<string, DateTime>();
             this.items = new List<ScoredItem>();
+            if(this.cachedItems == null)
+            {
+                this.cachedItems = new List<Tweet>();
+            }
         }
 
         public OrderedQueue SetCache(TweetService tweetService)
