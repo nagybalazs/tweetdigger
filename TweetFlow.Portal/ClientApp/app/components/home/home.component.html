@@ -3,18 +3,20 @@
     <button class="tradenow" onclick="location.href='https://cex.io/r/3/up118886422/3'">Trade now</button>
 </div>
 
-<div class="titleholder">
-    <div *ngFor="let channel of channels" class="title">
-        <p class="name">{{channel.name}}</p>
-    </div>
-    <div class="title signuptitle" style="display: none;">
-        
-    </div>
-</div>
+<ng-container *ngIf="initialized">
+    <div class="titleholder">
+        <div *ngFor="let channel of channels" class="title">
+            <p class="name">{{channel.name}}</p>
+        </div>
+        <div class="title signuptitle" style="display: none;">
 
-<div class="feedholder">
-    <div *ngFor="let channel of channels" class="feed">
-        <channel [endpoint]="channel.endpoint"></channel>
+        </div>
     </div>
-    <sign-up></sign-up>
-</div>
+
+    <div class="feedholder">
+        <div *ngFor="let channel of channels" class="feed">
+            <channel [hub]="hubConnection" [endpoint]="channel.endpoint"></channel>
+        </div>
+        <sign-up></sign-up>
+    </div>
+</ng-container>

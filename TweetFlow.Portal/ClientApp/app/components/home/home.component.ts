@@ -2,6 +2,7 @@
 import { Channel, Tweet } from '../../classes/classes';
 import { TweetType } from '../../classes/enum/tweettype.enum';
 import { ChannelService } from '../../services/services';
+import { HubConnection, TransportType } from '@aspnet/signalr';
 
 @Component({
     templateUrl: 'home.component.html',
@@ -9,11 +10,25 @@ import { ChannelService } from '../../services/services';
 })
 export class HomeComponent implements OnInit {
 
+    hubConnection: HubConnection;
     channels: Channel[];
+    initialized: boolean = false;
 
     constructor(private channelService: ChannelService) { }
 
     ngOnInit() {
+        this.hubConnection =
+            new HubConnection('/tweets', { transport: TransportType.ServerSentEvents });
+
+        this.hubConnection.start()
+            .then(() => {
+                console.log('started');
+                this.initialized = true;
+            })
+            .catch(err => {
+                console.log(JSON.stringify(err));
+            });
+
         this.channels = ChannelService.getChannels();
     }
 

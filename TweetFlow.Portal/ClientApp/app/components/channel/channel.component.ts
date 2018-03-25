@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, NgZone } from '@angular/core';
-import { HubConnection, TransportType } from '@aspnet/signalr-client';
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { HubConnection, TransportType } from '@aspnet/signalr';
 import { Tweet } from '../../classes/classes';
 import { ChannelService } from '../../services/services';
 
@@ -14,10 +14,12 @@ export class ChannelComponent implements OnInit {
     @Input()
     endpoint: string;
 
-    public tweets: Tweet[] = [];
-    private _hubConnetion: HubConnection;
+    @Input()
+    hub: HubConnection;
 
-    constructor(private channelService: ChannelService, private zone: NgZone) { }
+    public tweets: Tweet[] = [];
+
+    constructor(private channelService: ChannelService, private changeDecetionService: ChangeDetectorRef) { }
 
     ngOnInit() {
 
@@ -33,26 +35,23 @@ export class ChannelComponent implements OnInit {
     }
 
     initialize() {
-        this._hubConnetion = new HubConnection('/' + this.endpoint, { transport: TransportType.ServerSentEvents } );
-        
-        this._hubConnetion.on('Send', (data: any) => {
-            this.zone.run(() => {
-                if (this.tweets.length >= 100) {
-                    this.tweets.splice(-1, 1);
-                }
-                let tweet = Tweet.create(data);
-                this.tweets.unshift(tweet);
-                console.log(JSON.stringify(tweet));
-            });
-        });
+        this.hub.invoke('JoinGroup', this.endpoint);
 
-        this._hubConnetion.start()
-            .then(() => {
-                console.log('started');
-            })
-            .catch(err => {
-                console.log(JSON.stringify(err));
-            });
+        this.hub.on('JoinGroup', (data: string) => {
+            console.log(data);
+        });
+        
+        this.hub.on('Send', (data: any) => {
+            let tweet = Tweet.create(data);
+            if (tweet.type != this.endpoint) {
+                return;
+            }
+            if (this.tweets.length >= 100) {
+                this.tweets.splice(-1, 1);
+            }
+            this.tweets.unshift(tweet);
+            this.changeDecetionService.detectChanges();
+        });
     }
 
 }

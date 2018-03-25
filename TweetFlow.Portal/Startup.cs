@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TweetFlow.Stream.Hubs;
 
 namespace TweetFlow.Portal
 {
@@ -106,7 +107,7 @@ namespace TweetFlow.Portal
 
             app.UseSignalR(routes =>
             {
-                this.channelFactory.RegisterHubs(routes);
+                routes.MapHub<BaseHub>("/tweets");
             })
             .UseAuthentication()
             .UseStaticFiles()

@@ -15,7 +15,7 @@ export class Tweet {
     favorited: boolean;
     isRetweet: boolean;
     user: User;
-    type: TweetType;
+    type: string;
     celebrityHighlighted: boolean;
     retweetHighlighted: boolean;
 
@@ -61,7 +61,7 @@ export class Tweet {
             created.favoriteCount = 0;
         }
 
-        created.type = +tweet.type;
+        created.type = tweet.type;
 
         created.favorited = tweet.favorited;
         created.isRetweet = tweet.isRetweet;

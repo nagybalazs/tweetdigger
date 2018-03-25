@@ -14,10 +14,8 @@ namespace TweetFlow.Stream
     public class SampleStream
     {
         private IEnumerable<string> channelNames;
-        private bool subscribedOnAllEvents = false;
         private IFilteredStream filteredStream;
         private ILogger<SampleStream> logger;
-        private ChannelFactory channelFactory;
         private TweetScoreCalculator tweetScoreCalculator;
         private StreamCredentials streamCredentials;
 
