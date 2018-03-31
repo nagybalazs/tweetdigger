@@ -9,13 +9,19 @@ export class ChannelService {
 
     constructor(private http: HttpClient) { }
 
-    public static getChannels(): Channel[] {
-        return [
-            { endpoint: 'bitcoin', name: '#bitcoin' },
-            { endpoint: 'ethereum', name: '#ethereum' },
-            { endpoint: 'ripple', name: '#ripple' },
-            { endpoint: 'litecoin', name: '#litecoin' }
-        ];
+    public getChannels(): Observable<Channel[]> {
+        return this.http.get<string[]>('/api/tweet/channels')
+            .map(response => {
+                let result: Channel[] = new Array<Channel>();
+                response.forEach(channel => {
+                    let mapped: Channel = {
+                        endpoint: channel,
+                        name: `#${channel}`
+                    };
+                    result.push(mapped);
+                });
+                return result;
+            });
     }
 
     public getCachedTweets(channel: string): Observable<Tweet[]> {

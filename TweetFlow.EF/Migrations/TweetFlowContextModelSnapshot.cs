@@ -17,8 +17,8 @@ namespace TweetFlow.EF.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
 
             modelBuilder.Entity("TweetFlow.DatabaseModel.TWAccount", b =>
                 {
@@ -41,8 +41,7 @@ namespace TweetFlow.EF.Migrations
 
                     b.Property<bool>("ConvertedToOriginal");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<int>("FavoriteCount");
 
@@ -64,8 +63,7 @@ namespace TweetFlow.EF.Migrations
 
                     b.Property<string>("Type");
 
-                    b.Property<DateTime>("UserCreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("UserCreatedAt");
 
                     b.Property<int>("UserFavouritesCount");
 

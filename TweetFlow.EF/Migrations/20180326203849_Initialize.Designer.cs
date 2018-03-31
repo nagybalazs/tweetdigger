@@ -11,15 +11,15 @@ using TweetFlow.EF;
 namespace TweetFlow.EF.Migrations
 {
     [DbContext(typeof(TweetFlowContext))]
-    [Migration("20180303222545_RemoveTwStreamInfo")]
-    partial class RemoveTwStreamInfo
+    [Migration("20180326203849_Initialize")]
+    partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
 
             modelBuilder.Entity("TweetFlow.DatabaseModel.TWAccount", b =>
                 {
@@ -42,8 +42,7 @@ namespace TweetFlow.EF.Migrations
 
                     b.Property<bool>("ConvertedToOriginal");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<int>("FavoriteCount");
 
@@ -65,8 +64,7 @@ namespace TweetFlow.EF.Migrations
 
                     b.Property<string>("Type");
 
-                    b.Property<DateTime>("UserCreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("UserCreatedAt");
 
                     b.Property<int>("UserFavouritesCount");
 
@@ -103,6 +101,8 @@ namespace TweetFlow.EF.Migrations
                     b.Property<int>("HashtagBannCount");
 
                     b.Property<long>("TwitterId");
+
+                    b.Property<int>("UserMentionBannCount");
 
                     b.Property<int>("WordBannCount");
 

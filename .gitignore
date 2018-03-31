@@ -19,3 +19,4 @@ TweetFlow.Portal/appsettings.json
 /TweetFlow.Services/obj
 /.vs
 /TweetFlow.Portal/Logs
+/TweetFlow.Portal/published

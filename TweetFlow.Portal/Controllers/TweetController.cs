@@ -8,9 +8,11 @@ namespace TweetFlow.Portal.Controllers
     public class TweetController : Controller
     {
         private StreamFactory streamFactory;
-        public TweetController(StreamFactory streamFactory)
+        private ChannelFactory channelFactory;
+        public TweetController(StreamFactory streamFactory, ChannelFactory channelFactory)
         {
             this.streamFactory = streamFactory;
+            this.channelFactory = channelFactory;
         }
 
         [Route("cachedtweets")]
@@ -23,6 +25,15 @@ namespace TweetFlow.Portal.Controllers
                     .CachedItems
                     .Where(cachedItem => cachedItem.Type == channel)
                     .OrderByDescending(d => d.CreatedAt);
+
+            return Ok(result);
+        }
+
+        [Route("channels")]
+        public IActionResult Channels()
+        {
+            var result = 
+                this.channelFactory.ChannelNames;
 
             return Ok(result);
         }

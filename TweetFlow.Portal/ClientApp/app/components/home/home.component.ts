@@ -29,7 +29,10 @@ export class HomeComponent implements OnInit {
                 console.log(JSON.stringify(err));
             });
 
-        this.channels = ChannelService.getChannels();
+        this.channelService.getChannels()
+            .subscribe(data => {
+                this.channels = data;
+            });
     }
 
 }

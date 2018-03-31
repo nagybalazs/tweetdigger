@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using TweetFlow.Stream.Hubs;
+using System.Reflection;
 
 namespace TweetFlow.Portal
 {
@@ -25,7 +26,7 @@ namespace TweetFlow.Portal
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             this.Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
@@ -46,7 +47,7 @@ namespace TweetFlow.Portal
 
             var optionsBuilder =
                 new DbContextOptionsBuilder<TweetFlowContext>()
-                    .UseSqlServer(this.Configuration.GetConnectionString("TweetFlowConnection"));
+                    .UseMySql(this.Configuration.GetConnectionString("TweetFlowConnection"));
 
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
@@ -104,6 +105,11 @@ namespace TweetFlow.Portal
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+            });
 
             app.UseSignalR(routes =>
             {

@@ -10,8 +10,6 @@ namespace TweetFlow.Stream.Factory
     {
         private IHubContext<BaseHub> hub;
 
-        private List<ContextChannel> contextChannels;
-
         public List<string> ChannelNames
         {
             get
