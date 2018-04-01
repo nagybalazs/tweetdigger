@@ -13,11 +13,12 @@ export class ChannelService {
         return this.http.get<string[]>('/api/tweet/channels')
             .map(response => {
                 let result: Channel[] = new Array<Channel>();
-                response.forEach(channel => {
+                response.forEach((channel, index: number) => {
                     let mapped: Channel = {
                         endpoint: channel,
                         name: `#${channel}`,
-                        closed: false
+                        closed: false,
+                        column: index
                     };
                     result.push(mapped);
                 });

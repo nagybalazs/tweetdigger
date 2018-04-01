@@ -1,11 +1,11 @@
 ﻿<div class="header">
     <img class="logo" src="../../assets/twtflow_logo.png" />
     <button class="tradenow" onclick="location.href='https://cex.io/r/3/up118886422/3'">Trade now</button>
-    <div (click)="toggleAddChannel()" class="add-channel">add channel</div>
-    <div *ngIf="addChannelToggled" class="add-channel-menu">
-        <p>hello</p>
-        <p>szia</p>
-        <p>szevasz</p>
+    <div (click)="toggleAddChannelMenu()" (clickOutside)="closeAddChannelMenuOnOutSideClick($event)" class="add-channel">add channel</div>
+    <div *ngIf="addChannelToggled && channels" class="add-channel-menu prevent-close">
+        <ng-container *ngFor="let channel of channels">
+            <p *ngIf="channel.closed" (click)="openChannel(channel)" class="prevent-close">{{channel.name}}</p>
+        </ng-container>
     </div>
 </div>
 
@@ -13,6 +13,9 @@
     <div class="titleholder">
         <div [class.closed-channel]="channel.closed" *ngFor="let channel of channels" class="title">
             <p class="name">{{channel.name}}</p>
+            <select [(ngModel)]="selectedChannel" (change)="changeChannel(channel)">
+                <option *ngFor="let closedChannel of closedChannels" [ngValue]="closedChannel">{{closedChannel.name}}</option>
+            </select>
         </div>
         <!--<div class="title signuptitle" style="display: none;"></div>-->
     </div>

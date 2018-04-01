@@ -13,6 +13,8 @@ import { SignupComponent } from './components/signup/signup.component';
 import { ChannelService, AccountService } from './services/services';
 import { HttpClientModule } from '@angular/common/http';
 
+import { ClickOutsideModule } from 'ng-click-outside';
+
 @NgModule({
     providers: [
         ChannelService,
@@ -34,7 +36,8 @@ import { HttpClientModule } from '@angular/common/http';
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
             { path: '**', redirectTo: 'home' }
-        ])
+        ]),
+        ClickOutsideModule
     ]
 })
 export class AppModuleShared {
