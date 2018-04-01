@@ -14,6 +14,8 @@ export class HomeComponent implements OnInit {
     channels: Channel[];
     initialized: boolean = false;
 
+    addChannelToggled: boolean = false;
+
     constructor(private channelService: ChannelService) { }
 
     ngOnInit() {
@@ -33,6 +35,17 @@ export class HomeComponent implements OnInit {
             .subscribe(data => {
                 this.channels = data;
             });
+    }
+
+    closeChannel(endpointOfChannelToClose: string) {
+        let channelToClose = this.channels.find(channel => channel.endpoint == endpointOfChannelToClose);
+        if (channelToClose) {
+            channelToClose.closed = true;
+        }
+    }
+
+    toggleAddChannel() {
+        this.addChannelToggled = !this.addChannelToggled;
     }
 
 }

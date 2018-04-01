@@ -1,3 +1,4 @@
+<span (click)="closeChannel()" class="close">x</span>
 <div [class.highlighted]="tweet.celebrityHighlighted || tweet.retweetHighlighted" class="tweet" *ngFor="let tweet of tweets">
     <tweet [tweet]="tweet"></tweet>
 </div>

@@ -16,7 +16,8 @@ export class ChannelService {
                 response.forEach(channel => {
                     let mapped: Channel = {
                         endpoint: channel,
-                        name: `#${channel}`
+                        name: `#${channel}`,
+                        closed: false
                     };
                     result.push(mapped);
                 });

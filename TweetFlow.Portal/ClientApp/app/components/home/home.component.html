@@ -1,22 +1,26 @@
 ﻿<div class="header">
     <img class="logo" src="../../assets/twtflow_logo.png" />
     <button class="tradenow" onclick="location.href='https://cex.io/r/3/up118886422/3'">Trade now</button>
+    <div (click)="toggleAddChannel()" class="add-channel">add channel</div>
+    <div *ngIf="addChannelToggled" class="add-channel-menu">
+        <p>hello</p>
+        <p>szia</p>
+        <p>szevasz</p>
+    </div>
 </div>
 
 <ng-container *ngIf="initialized">
     <div class="titleholder">
-        <div *ngFor="let channel of channels" class="title">
+        <div [class.closed-channel]="channel.closed" *ngFor="let channel of channels" class="title">
             <p class="name">{{channel.name}}</p>
         </div>
-        <div class="title signuptitle" style="display: none;">
-
-        </div>
+        <!--<div class="title signuptitle" style="display: none;"></div>-->
     </div>
 
     <div class="feedholder">
-        <div *ngFor="let channel of channels" class="feed">
-            <channel [hub]="hubConnection" [endpoint]="channel.endpoint"></channel>
+        <div *ngFor="let channel of channels" class="feed" [class.closed-channel]="channel.closed">
+            <channel (channelClosed)="closeChannel($event)" [hub]="hubConnection" [endpoint]="channel.endpoint"></channel>
         </div>
-        <sign-up></sign-up>
+        <!--<sign-up></sign-up>-->
     </div>
 </ng-container>

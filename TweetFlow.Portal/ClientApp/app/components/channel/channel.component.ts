@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { HubConnection, TransportType } from '@aspnet/signalr';
 import { Tweet } from '../../classes/classes';
 import { ChannelService } from '../../services/services';
 
 @Component({
     selector: 'channel',
-    templateUrl: './channel.component.html'
+    templateUrl: './channel.component.html',
+    styleUrls: ['channel.component.css']
 })
 export class ChannelComponent implements OnInit {
 
@@ -16,6 +17,9 @@ export class ChannelComponent implements OnInit {
 
     @Input()
     hub: HubConnection;
+
+    @Output()
+    channelClosed: EventEmitter<string> = new EventEmitter<"">();
 
     public tweets: Tweet[] = [];
 
@@ -52,6 +56,10 @@ export class ChannelComponent implements OnInit {
             this.tweets.unshift(tweet);
             this.changeDecetionService.detectChanges();
         });
+    }
+
+    closeChannel() {
+        this.channelClosed.emit(this.endpoint);
     }
 
 }
