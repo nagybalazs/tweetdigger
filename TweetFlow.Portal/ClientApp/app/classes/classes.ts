@@ -3,3 +3,4 @@ export * from './user.class';
 export * from './channel.class';
 export * from './enum/tweettype.enum';
 export * from './enum/addaccountresulttype.enum';
+export * from './storedchannel.class';

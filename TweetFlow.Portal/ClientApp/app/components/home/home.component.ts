@@ -1,10 +1,11 @@
 ﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Channel, Tweet } from '../../classes/classes';
+import { Channel, StoredChannel, Tweet } from '../../classes/classes';
 import { TweetType } from '../../classes/enum/tweettype.enum';
 import { ChannelService } from '../../services/services';
 import { HubConnection, TransportType } from '@aspnet/signalr';
 
-const defaultOpenedChannelCount = 4;
+const defaultOpenedChannelCount: number = 3;
+const channelStoreKey: string = "channels";
 
 @Component({
     templateUrl: 'home.component.html',
@@ -44,14 +45,34 @@ export class HomeComponent implements OnInit {
         this.channelService.getChannels()
             .subscribe(data => {
                 if (data) {
-                    let count = data.length < defaultOpenedChannelCount ? data.length : defaultOpenedChannelCount;
-                    for (let i = 0; i < data.length; i++) {
-                        if (i < count) {
-                            this.channels.push(data[i]);
-                        }
-                        else {
-                            data[i].closed = true;
-                            this.channels.push(data[i]);
+                    let storedChannels: StoredChannel[] = this.getStoredChannels();
+                    if (storedChannels && storedChannels.length > 0) {
+                        let tempChannels: Channel[] = new Array<Channel>();
+                        storedChannels.forEach(storedChannel => {
+                            let restoredChannel: Channel = new Channel();
+                            restoredChannel.closed = storedChannel.closed;
+                            restoredChannel.column = storedChannel.column;
+                            restoredChannel.endpoint = storedChannel.endpoint;
+                            restoredChannel.name = storedChannel.name;
+                            let currentChannel = data.find(channel => channel.endpoint == storedChannel.endpoint);
+                            restoredChannel.tweets = new Array<Tweet>();
+                            if (currentChannel) {
+                                restoredChannel.tweets = currentChannel.tweets;
+                            }
+                            tempChannels.push(restoredChannel);
+                        });
+                        this.channels = tempChannels;
+                    }
+                    else {
+                        let count = data.length < defaultOpenedChannelCount ? data.length : defaultOpenedChannelCount;
+                        for (let i = 0; i < data.length; i++) {
+                            if (i < count) {
+                                this.channels.push(data[i]);
+                            }
+                            else {
+                                data[i].closed = true;
+                                this.channels.push(data[i]);
+                            }
                         }
                     }
                 }
@@ -62,6 +83,7 @@ export class HomeComponent implements OnInit {
         this.closeAddChannelMenu();
         if (channelToOpen) {
             channelToOpen.closed = false;
+            this.storeChannels();
         }
     }
 
@@ -69,6 +91,7 @@ export class HomeComponent implements OnInit {
         let channelToClose = this.getChannelByEndpoint(endpointOfChannelToClose);
         if (channelToClose) {
             channelToClose.closed = true;
+            this.storeChannels();
         }
     }
 
@@ -88,9 +111,34 @@ export class HomeComponent implements OnInit {
 
     changeChannel(oldChannel: Channel) {
         this.selectedChannel.column = oldChannel.column;
-        this.channels.sort(channel => channel.column);
+        this.channels = this.channels.sort(channel => channel.column);
         oldChannel.closed = true;
         this.selectedChannel.closed = false;
+        this.storeChannels();
+    }
+
+    storeChannels() {
+        let channelsToStore: StoredChannel[] = new Array<StoredChannel>();
+        this.channels.forEach(channel => {
+            let channelToStore: StoredChannel = {
+                closed: channel.closed,
+                column: channel.column,
+                endpoint: channel.endpoint,
+                name: channel.name
+            };
+            channelsToStore.push(channelToStore);
+        });
+        localStorage.setItem(channelStoreKey, JSON.stringify(channelsToStore));
+    }
+
+    private getStoredChannels(): StoredChannel[] {
+        let json = localStorage.getItem(channelStoreKey);
+        if (!json) {
+            return new Array<StoredChannel>();
+        }
+
+        let data = JSON.parse(json);
+        return data;
     }
 
     private getChannelByEndpoint(endpoint: string): Channel | undefined {
