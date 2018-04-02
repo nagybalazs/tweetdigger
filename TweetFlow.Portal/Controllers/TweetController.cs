@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
+using TweetFlow.Stream;
 using TweetFlow.Stream.Factory;
 
 namespace TweetFlow.Portal.Controllers
@@ -32,8 +34,30 @@ namespace TweetFlow.Portal.Controllers
         [Route("channels")]
         public IActionResult Channels()
         {
-            var result = 
+            var channels = 
                 this.channelFactory.ChannelNames;
+
+            var cachedTweets =
+                this.streamFactory
+                    .GetStream()
+                    .Queue
+                    .CachedItems;
+
+            var result = new List<Channel>();
+
+            foreach(var channel in channels)
+            {
+                result.Add(new Channel
+                {
+                    Endpoint = channel,
+                    Name = $"#{channel}",
+                    Tweets = 
+                        cachedTweets
+                            .Where(cachedTweet => cachedTweet.Type == channel)
+                            .OrderByDescending(cachedTweet => cachedTweet.CreatedAt)
+                            .ToList()
+                });
+            }
 
             return Ok(result);
         }

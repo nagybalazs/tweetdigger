@@ -42,7 +42,7 @@ namespace TweetFlow.Stream.Factory
             return stream;
         }
 
-        private SampleStream CreateTrackedStream(params string[] track)
+        private SampleStream CreateTrackedStream(params string[] tracks)
         {
             if (this.stream == null)
             {
@@ -51,7 +51,7 @@ namespace TweetFlow.Stream.Factory
                 this.stream =
                     new SampleStream(this.channelFactory, this.credentials, this.orderedQueue, this.tweetScoreCalculator, this.logger)
                         .AddLanguage(Language.English)
-                        .AddTracks(track)
+                        .AddTracks(tracks)
                         .AddQueryParameter("result_type", "recent");
 
             }

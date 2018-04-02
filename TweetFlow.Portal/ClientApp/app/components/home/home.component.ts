@@ -1,10 +1,10 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Channel, Tweet } from '../../classes/classes';
 import { TweetType } from '../../classes/enum/tweettype.enum';
 import { ChannelService } from '../../services/services';
 import { HubConnection, TransportType } from '@aspnet/signalr';
 
-const defaultOpenedChannelCount = 2;
+const defaultOpenedChannelCount = 4;
 
 @Component({
     templateUrl: 'home.component.html',
@@ -27,20 +27,19 @@ export class HomeComponent implements OnInit {
     selectedChannel: Channel;
     addChannelToggled: boolean = false;
 
-    constructor(private channelService: ChannelService) { }
+    constructor(private channelService: ChannelService, private changeDetectionService: ChangeDetectorRef) { }
 
     ngOnInit() {
-        this.hubConnection =
-            new HubConnection('/tweets', { transport: TransportType.ServerSentEvents });
-
-        this.hubConnection.start()
-            .then(() => {
-                console.log('started');
-                this.initialized = true;
-            })
-            .catch(err => {
-                console.log(JSON.stringify(err));
-            });
+        this.channelService
+            .createHubConnection()
+            .startHubConnection()
+                .then(() => {
+                    this.initialized = true;
+                    this.channelService.startChannel();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
 
         this.channelService.getChannels()
             .subscribe(data => {
@@ -74,7 +73,6 @@ export class HomeComponent implements OnInit {
     }
 
     toggleAddChannelMenu() {
-        this.channels.sort(p => p.column);
         this.addChannelToggled = !this.addChannelToggled;
     }
 
@@ -89,6 +87,8 @@ export class HomeComponent implements OnInit {
     }
 
     changeChannel(oldChannel: Channel) {
+        this.selectedChannel.column = oldChannel.column;
+        this.channels.sort(channel => channel.column);
         oldChannel.closed = true;
         this.selectedChannel.closed = false;
     }

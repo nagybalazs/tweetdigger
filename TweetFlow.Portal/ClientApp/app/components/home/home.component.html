@@ -22,7 +22,7 @@
 
     <div class="feedholder">
         <div *ngFor="let channel of channels" class="feed" [class.closed-channel]="channel.closed">
-            <channel (channelClosed)="closeChannel($event)" [hub]="hubConnection" [endpoint]="channel.endpoint"></channel>
+            <channel (channelClosed)="closeChannel($event)" [channel]="channel"></channel>
         </div>
         <!--<sign-up></sign-up>-->
     </div>

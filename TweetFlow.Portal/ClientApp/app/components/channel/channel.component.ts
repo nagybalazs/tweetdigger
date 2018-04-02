@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { HubConnection, TransportType } from '@aspnet/signalr';
-import { Tweet } from '../../classes/classes';
+import { Tweet, Channel } from '../../classes/classes';
 import { ChannelService } from '../../services/services';
 
 @Component({
@@ -13,7 +13,7 @@ export class ChannelComponent implements OnInit {
     private initialized: boolean = false;
 
     @Input()
-    endpoint: string;
+    channel: Channel;
 
     @Input()
     hub: HubConnection;
@@ -21,45 +21,33 @@ export class ChannelComponent implements OnInit {
     @Output()
     channelClosed: EventEmitter<string> = new EventEmitter<"">();
 
-    public tweets: Tweet[] = [];
-
     constructor(private channelService: ChannelService, private changeDecetionService: ChangeDetectorRef) { }
 
     ngOnInit() {
 
-        if (!this.endpoint) {
+        if (!this.channel || !this.channel.endpoint) {
             throw Error("endpoint is required");
         }
 
-        this.channelService.getCachedTweets(this.endpoint)
+        this.channelService.getCachedTweets(this.channel.endpoint)
             .subscribe(cachedTweets => {
-                this.tweets = cachedTweets.map(tweet => Tweet.create(tweet));
-                this.initialize();
+                this.channelService.joinHubGroup(this.channel.endpoint);
+                this.channelService.tweetReceived
+                    .subscribe(tweet => {
+                        if (tweet.type != this.channel.endpoint) {
+                            return;
+                        }
+                        if (this.channel.tweets.length > 100) {
+                            this.channel.tweets.splice(-1, 1);
+                        }
+                        this.channel.tweets.unshift(tweet);
+                        this.changeDecetionService.detectChanges();
+                    });
             });
     }
 
-    initialize() {
-        this.hub.invoke('JoinGroup', this.endpoint);
-
-        this.hub.on('JoinGroup', (data: string) => {
-            console.log(data);
-        });
-        
-        this.hub.on('Send', (data: any) => {
-            let tweet = Tweet.create(data);
-            if (tweet.type != this.endpoint) {
-                return;
-            }
-            if (this.tweets.length >= 100) {
-                this.tweets.splice(-1, 1);
-            }
-            this.tweets.unshift(tweet);
-            this.changeDecetionService.detectChanges();
-        });
-    }
-
     closeChannel() {
-        this.channelClosed.emit(this.endpoint);
+        this.channelClosed.emit(this.channel.endpoint);
     }
 
 }
