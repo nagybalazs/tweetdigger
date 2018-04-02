@@ -65,12 +65,16 @@ export class HomeComponent implements OnInit {
                     }
                     else {
                         let count = data.length < defaultOpenedChannelCount ? data.length : defaultOpenedChannelCount;
+                        let indexer = 0;
                         for (let i = 0; i < data.length; i++) {
                             if (i < count) {
+                                data[i].column = indexer;
                                 this.channels.push(data[i]);
+                                indexer++;
                             }
                             else {
                                 data[i].closed = true;
+                                data[i].column = -1;
                                 this.channels.push(data[i]);
                             }
                         }
@@ -82,7 +86,11 @@ export class HomeComponent implements OnInit {
     openChannel(channelToOpen: Channel) {
         this.closeAddChannelMenu();
         if (channelToOpen) {
+            let columns = this.channels.map(channel => channel.column);
+            let maxColumn = Math.max(...columns);
+            channelToOpen.column = maxColumn + 1;
             channelToOpen.closed = false;
+            this.channels.sort((a, b) => { return a.column - b.column });
             this.storeChannels();
         }
     }
@@ -90,7 +98,15 @@ export class HomeComponent implements OnInit {
     closeChannel(endpointOfChannelToClose: string) {
         let channelToClose = this.getChannelByEndpoint(endpointOfChannelToClose);
         if (channelToClose) {
+            let originalColumn = channelToClose.column;
+            channelToClose.column = -1;
+            this.channels.forEach(channel => {
+                if (channel.column >= originalColumn && channel.column != -1) {
+                    channel.column -= 1;
+                }
+            });
             channelToClose.closed = true;
+            this.channels.sort((a, b) => { return a.column - b.column });
             this.storeChannels();
         }
     }
@@ -111,7 +127,8 @@ export class HomeComponent implements OnInit {
 
     changeChannel(oldChannel: Channel) {
         this.selectedChannel.column = oldChannel.column;
-        this.channels = this.channels.sort(channel => channel.column);
+        oldChannel.column = -1;
+        this.channels.sort((a, b) => { return a.column - b.column });
         oldChannel.closed = true;
         this.selectedChannel.closed = false;
         this.storeChannels();
