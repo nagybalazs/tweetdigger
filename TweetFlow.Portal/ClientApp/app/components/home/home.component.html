@@ -13,9 +13,12 @@
     <div class="titleholder">
         <div [class.closed-channel]="channel.closed" *ngFor="let channel of channels" class="title">
             <p class="name">{{channel.name}}</p>
-            <select [(ngModel)]="selectedChannel" (change)="changeChannel(channel)">
-                <option *ngFor="let closedChannel of closedChannels" [ngValue]="closedChannel">{{closedChannel.name}}</option>
-            </select>
+            <div class="select-channel">
+                <p>select channel</p>
+                <select *ngIf="closedChannels && closedChannels.length > 0" [(ngModel)]="selectedChannel" (change)="changeChannel(channel)">
+                    <option *ngFor="let closedChannel of closedChannels" [ngValue]="closedChannel">{{closedChannel.name}}</option>
+                </select>
+            </div>
         </div>
         <!--<div class="title signuptitle" style="display: none;"></div>-->
     </div>

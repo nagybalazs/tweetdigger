@@ -4,6 +4,7 @@ import { StoredChannel } from './storedchannel.class';
 export class Channel extends StoredChannel { 
 
     tweets: Tweet[];
+    closable: boolean;
 
     constructor() {
         super();

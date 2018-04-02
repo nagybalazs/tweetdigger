@@ -4,7 +4,7 @@ import { TweetType } from '../../classes/enum/tweettype.enum';
 import { ChannelService } from '../../services/services';
 import { HubConnection, TransportType } from '@aspnet/signalr';
 
-const defaultOpenedChannelCount: number = 3;
+const defaultOpenedChannelCount: number = 4;
 const channelStoreKey: string = "channels";
 
 @Component({
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
         return this.channels.filter(channel => !channel.closed);
     }
 
-    selectedChannel: Channel;
+    selectedChannel: Channel | null = null;
     addChannelToggled: boolean = false;
 
     constructor(private channelService: ChannelService, private changeDetectionService: ChangeDetectorRef) { }
@@ -62,6 +62,7 @@ export class HomeComponent implements OnInit {
                             tempChannels.push(restoredChannel);
                         });
                         this.channels = tempChannels;
+                        this.setChannelClosableFlags();
                     }
                     else {
                         let count = data.length < defaultOpenedChannelCount ? data.length : defaultOpenedChannelCount;
@@ -78,6 +79,7 @@ export class HomeComponent implements OnInit {
                                 this.channels.push(data[i]);
                             }
                         }
+                        this.setChannelClosableFlags();
                     }
                 }
             });
@@ -90,7 +92,8 @@ export class HomeComponent implements OnInit {
             let maxColumn = Math.max(...columns);
             channelToOpen.column = maxColumn + 1;
             channelToOpen.closed = false;
-            this.channels.sort((a, b) => { return a.column - b.column });
+            this.sortChannels();
+            this.setChannelClosableFlags();
             this.storeChannels();
         }
     }
@@ -106,7 +109,8 @@ export class HomeComponent implements OnInit {
                 }
             });
             channelToClose.closed = true;
-            this.channels.sort((a, b) => { return a.column - b.column });
+            this.sortChannels();
+            this.setChannelClosableFlags();
             this.storeChannels();
         }
     }
@@ -126,11 +130,16 @@ export class HomeComponent implements OnInit {
     }
 
     changeChannel(oldChannel: Channel) {
-        this.selectedChannel.column = oldChannel.column;
+        if (this.selectedChannel) {
+            this.selectedChannel.column = oldChannel.column;
+        }
         oldChannel.column = -1;
-        this.channels.sort((a, b) => { return a.column - b.column });
+        this.sortChannels();
         oldChannel.closed = true;
-        this.selectedChannel.closed = false;
+        if (this.selectedChannel) {
+            this.selectedChannel.closed = false;
+        }
+        this.setChannelClosableFlags();
         this.storeChannels();
     }
 
@@ -146,6 +155,17 @@ export class HomeComponent implements OnInit {
             channelsToStore.push(channelToStore);
         });
         localStorage.setItem(channelStoreKey, JSON.stringify(channelsToStore));
+    }
+
+    private setChannelClosableFlags() {
+        let closable = this.openedChannels.length > 1;
+        this.channels.forEach(channel => {
+            channel.closable = closable;
+        });
+    }
+
+    private sortChannels() {
+        this.channels.sort((channel1, channel2) => { return channel1.column - channel2.column });
     }
 
     private getStoredChannels(): StoredChannel[] {

@@ -175,6 +175,18 @@ h2 {
         background-color: #68B1CD;
     }
 
+    .title:nth-child(6) .name {
+        background-color: #CDAA68;
+    }
+
+    .title:nth-child(7) .name {
+        background-color: #CD68AF;
+    }
+
+    .title:nth-child(8) .name {
+        background-color: #68B1CD;
+    }
+
 .tweet {
     padding: 13px;
     background-color: white;

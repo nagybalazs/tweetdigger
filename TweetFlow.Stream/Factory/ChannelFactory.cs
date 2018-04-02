@@ -16,7 +16,7 @@ namespace TweetFlow.Stream.Factory
             {
                 return new List<string>
                 {
-                    "bitcoin", "ethereum", "litecoin", "ripple"
+                    "bitcoin", "ethereum", "litecoin", "ripple", "stellar", "cardano", "monero"
                 };
             }
         }

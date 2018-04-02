@@ -19,6 +19,18 @@
         text-align: center;
     }
 
+    .title .select-channel {
+        margin-right: 8px;
+    }
+
+    .title .select-channel p {
+        font-size: 0.7em;
+        margin-left: 1px;
+    }
+
+    .title .select-channel select {
+        min-width: 90px;
+    }
 
 .title.signuptitle {
     border: none;
